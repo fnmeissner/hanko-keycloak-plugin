@@ -1,0 +1,2 @@
+io.hanko.plugin.keycloak.HankoFormAuthenticatorFactory
+io.hanko.plugin.keycloak.HankoUafAuthenticatorFactory

@@ -1,0 +1,31 @@
+---
+- hosts: all
+  gather_facts: no
+  become: true
+  pre_tasks:
+    - name: 'install python2'
+      raw: bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qqy python-minimal)"
+      register: output
+      changed_when: output.stdout != ""
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400 #One day
+    - name: Gathering Facts
+      setup:
+    - name: install openjdk 8
+      apt: name=openjdk-8-jdk state=present
+    - name: Download Keycloak
+      get_url: >
+        url=https://downloads.jboss.org/keycloak/4.1.0.Final/keycloak-4.1.0.Final.tar.gz
+        dest=/opt/keycloak-4.1.0.Final.tar.gz
+      register: keycloak_archive_file
+    - name: Creates directory for Keycloak installation
+      file: path=/opt state=directory
+    - name: Unzip sdk tools
+      unarchive:
+        src: "{{ keycloak_archive_file.dest }}"
+        dest: /opt
+        remote_src: yes

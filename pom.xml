@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <name>HANKO Plugin Keycloak Parent</name>
+    <description/>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.hanko.plugins.keycloak</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>hanko-plugin-keycloak-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <licenses>
+            <license>
+                <name>Apache License, Version 2.0.0</name>
+                <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+                <distribution>repo</distribution>
+            </license>
+        </licenses>
+
+    <properties>
+        <version.keycloak>4.1.0.Final</version.keycloak>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>bintray-hanko-jvm-sdks</id>
+            <name>bintray-plugins</name>
+            <url>https://dl.bintray.com/hanko/jvm-sdks</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.keycloak.bom</groupId>
+                <artifactId>keycloak-spi-bom</artifactId>
+                <version>${version.keycloak}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.hanko.plugins.keycloak</groupId>
+                <artifactId>hanko-plugin-keycloak-ejb</artifactId>
+                <version>${project.version}</version>
+                <type>ejb</type>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-server-spi-private</artifactId>
+                <scope>provided</scope>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-services</artifactId>
+                <scope>provided</scope>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>hanko-plugin-keycloak-ejb</module>
+        <module>hanko-plugin-keycloak-ear</module>
+    </modules>
+</project>
