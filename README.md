@@ -20,8 +20,8 @@ This plugin is currently developed for Keycloak 4.1.0.Final.
 
 1. Download the latest version from the [releases page](https://github.com/teamhanko/hanko-keycloak-plugin/releases).
 2. Copy the ear file into the `standalone/deployments` directory of your Keycloaks root directory. 
-3. Copy templates.zip to the root directory of you Keycloak server.
-4. Unzip templates.zip by running `unzip templates.zip`
+3. Copy templates.zip (or themes.zip, depending on the version) to the root directory of you Keycloak server.
+4. Unzip templates.zip (or themes.zip, depending on the version) by running `unzip templates.zip`
 
 ## Configuration
 
@@ -164,6 +164,11 @@ cd hanko-keycloak-plugin
 Build the plugin by running:
 ```
 mvn package
+```
+
+Zip the themes by running:
+```
+zip -r themes.zip themes
 ```
 
 ## Testing with Vagrant
