@@ -1,6 +1,6 @@
 {
   "realm": "demo",
-  "auth-server-url": "https://keycloak/auth",
+  "auth-server-url": "https://localhost:8443/auth",
   "ssl-required": "none",
   "resource": "hanko-web-client",
   "public-client": true,

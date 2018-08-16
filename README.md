@@ -35,9 +35,9 @@ This plugin is currently developed for Keycloak 4.1.0.Final.
 6. Delete the action **Username Password Form**.
 7. Delete the action **OTP Form**.
 ![Delete actions](./docs/resources/delete-actions.png)
-8. Add the execution flow **Hanko Authenticator** to the forms flow and mark it as **required**.
+8. Add the execution **Hanko Authenticator** to the forms flow and mark it as **required**.
 ![Add Hanko actions](./docs/resources/add-execution-flows.png)
-9. Add the execution flow **Hanko UAF Auth** and mark it as **optional**.
+9. Add the execution **Hanko UAF Auth** and mark it as **optional**.
 10. Open the configuration of the **Hanko UAF Auth** flow by clicking **Actions** -> **Config** and insert your apikey. 
 ![Open UAF Config](./docs/resources/open-uaf-config.png)
 11. Open the **Bindings** tab and change the **Browser Flow** to **Browser flow with Hanko**.
@@ -168,13 +168,18 @@ mvn package
 
 ## Testing with Vagrant
 
-You can use the vagrant to create a development or test environment with pre-installed keycloak 4.1.0:
+You can use the vagrant to create a development or test environment with pre-installed keycloak 4.1.0.
+
+You need the vagrant scp plugin:
+```
+vagrant plugin install vagrant-scp
+``` 
 
 ```
 git clone https://github.com/teamhanko/hanko-keycloak-plugin.git
 cd hanko-keycloak-plugin
 vagrant up
-./deploy_local
+./deploy_local.sh
 vagrant ssh
 cd /opt/keycloak-4.1.0.Final
 ./bin/add-user-keycloak.sh -r master -u admin -p admin
