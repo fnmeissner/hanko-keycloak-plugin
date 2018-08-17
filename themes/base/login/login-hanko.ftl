@@ -10,17 +10,18 @@
 
         <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
 
-        <p>Currently we don't support cancellation of the login process, but you can use the back-button of your browser
-            to return to the login with password page.</p>
-
         <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
               id="kc-hanko-login-form"
               method="post">
+            <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
+                   type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
         </form>
 
         <script>
             window.onload = function () {
-                document.getElementById('kc-hanko-login-form').submit();
+                fetch('/auth/realms/${realm.name}/hanko/await/${requestId}').then(response => {
+                    document.getElementById('kc-hanko-login-form').submit();
+                });
             }
         </script>
     </#if>

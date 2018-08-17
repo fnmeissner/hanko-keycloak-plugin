@@ -1,5 +1,5 @@
 {
-  "realm": "demo",
+  "realm": "master",
   "auth-server-url": "https://localhost:8443/auth",
   "ssl-required": "none",
   "resource": "hanko-web-client",

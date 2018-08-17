@@ -39,7 +39,7 @@
 
         const updateIsHankoEnabled = () => {
             runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/demo/hanko',
+                fetch(keycloak.authServerUrl + '/realms/master/hanko',
                     {
                         method: "GET",
                         headers: {
@@ -58,7 +58,7 @@
 
         const requestRegistration = () => {
             runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/demo/hanko/register',
+                fetch(keycloak.authServerUrl + '/realms/master/hanko/register',
                     {
                         method: "POST",
                         headers: {
@@ -77,7 +77,7 @@
 
         const awaitRegistrationComplete = () => {
             runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/demo/hanko/register/complete',
+                fetch(keycloak.authServerUrl + '/realms/master/hanko/register/complete',
                     {
                         method: "POST",
                         headers: {
@@ -96,7 +96,7 @@
 
         const disableHanko = () => {
             runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/demo/hanko/deregister',
+                fetch(keycloak.authServerUrl + '/realms/master/hanko/deregister',
                     {
                         method: "POST",
                         headers: {

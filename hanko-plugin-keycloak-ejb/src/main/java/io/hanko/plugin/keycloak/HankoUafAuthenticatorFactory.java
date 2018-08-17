@@ -93,6 +93,13 @@ public class HankoUafAuthenticatorFactory implements AuthenticatorFactory, Confi
     static {
         ProviderConfigProperty property;
         property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_APIKEYID);
+        property.setLabel("Hanko API KEY ID");
+        property.setType(ProviderConfigProperty.PASSWORD);
+        property.setHelpText("Hanko API KEY ID.");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
         property.setName(HankoUtils.CONFIG_APIKEY);
         property.setLabel("Hanko API KEY");
         property.setType(ProviderConfigProperty.PASSWORD);

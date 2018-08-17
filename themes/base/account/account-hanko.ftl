@@ -32,20 +32,33 @@
             <div class="container">
                 <ul class="nav navbar-nav navbar-utility">
                         <#if realm.internationalizationEnabled>
-                            <li>
-                                <div class="kc-dropdown" id="kc-locale-dropdown">
-                                    <a href="#" id="kc-current-locale-link">${locale.current}</a>
-                                    <ul>
-                                        <#list locale.supported as l>
-                                            <li class="kc-dropdown-item"><a href="${l.url}">${l.label}</a></li>
-                                        </#list>
-                                    </ul>
-                                </div>
-                            <li>
+                            <#if locale??>
+                                <li>
+                                    <div class="kc-dropdown" id="kc-locale-dropdown">
+                                        <a href="#" id="kc-current-locale-link">${locale.current}</a>
+                                        <ul>
+                                            <#list locale.supported as l>
+                                                <li class="kc-dropdown-item"><a href="${l.url}">${l.label}</a></li>
+                                            </#list>
+                                        </ul>
+                                    </div>
+                                <li>
+                            </#if>
                         </#if>
                         <#if referrer?has_content && referrer.url?has_content>
                             <li><a href="${referrer.url}" id="referrer">Back to ${referrer.name}</a></li></#if>
-                    <li><a href="${url.logoutUrl}">Sign Out</a></li>
+                <#if redirect_url ??>
+                    <li id='referrer'>
+                        <a href="${redirect_url}">
+                            <#if redirect_name ??>
+                                ${redirect_name}
+                            <#else>
+                                Go Back
+                            </#if>
+                        </a>
+                    </li>
+                </#if>
+                    <li id='signout-link'><a href="${url.logoutUrl}">Sign Out</a></li>
                 </ul>
             </div>
         </div>
@@ -66,7 +79,8 @@
         <hr/>
         <div id="register-hanko" style="display:none">
             <a href='https://play.google.com/store/apps/details?id=io.hanko.authenticator&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
-                <img width="150em" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
+                <img width="150em" alt='Get it on Google Play'
+                     src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
             </a>
             <ol>
                 <li>Install Hanko Authenticator on your mobile</li>
@@ -86,15 +100,21 @@
             <input class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonLargeClass!}"
                    type="button" value="Deregister" id="disableButton"/>
         </div>
+        <div id="not-logged-in" style="display:none">
+            Login failed, <a href="#" id="click-to-retry">click here to retry</a>.
+        </div>
     </div>
 </div>
 <script>
     window.onload = function () {
         const registerHankoDiv = document.getElementById('register-hanko');
         const deregisterHankoDiv = document.getElementById('deregister-hanko');
+        const notLoggedInDiv = document.getElementById('not-logged-in');
         const enableButton = document.getElementById('enableButton');
         const disableButton = document.getElementById('disableButton');
         const qrcode = document.getElementById('qrcodeDiv');
+        const signoutLink = document.getElementById('signout-link');
+        const clickToRetry = document.getElementById('click-to-retry');
 
         const keycloakConfig = {
             "url": '${keycloakUrl}',
@@ -113,7 +133,6 @@
             });
         };
 
-
         const updateIsHankoEnabled = () => {
             runAfterRenewal(function () {
                 fetch(keycloak.authServerUrl + 'realms/${keycloakRealm}/hanko',
@@ -130,14 +149,15 @@
                             if (res.isPasswordlessActive) {
                                 registerHankoDiv.style.display = 'none';
                                 deregisterHankoDiv.style.display = 'block';
+                                notLoggedInDiv.style.display = 'none';
                             } else {
                                 registerHankoDiv.style.display = 'block';
                                 deregisterHankoDiv.style.display = 'none';
+                                notLoggedInDiv.style.display = 'none';
                             }
                         });
             });
         };
-
 
         const requestRegistration = () => {
             runAfterRenewal(function () {
@@ -197,18 +217,27 @@
             });
         };
 
-        keycloak.init({onLoad: 'login-required'}).then((authenticated) => {
+        const initKeycloak = () => {
+            keycloak.init({onLoad: 'login-required'}).then((authenticated) => {
 
-            if (authenticated) {
-                updateIsHankoEnabled();
-                enableButton.onclick = requestRegistration;
-                disableButton.onclick = disableHanko;
-            }
+                if (authenticated) {
+                    signoutLink.style.display = 'block';
+                    updateIsHankoEnabled();
+                    enableButton.onclick = requestRegistration;
+                    disableButton.onclick = disableHanko;
+                }
 
-        }).catch(function (err) {
-            console.log('failed to initialize');
-            console.log("error:", err);
-        });
+            }).catch(function (err) {
+                console.log('failed to initialize');
+                console.log("error:", err);
+                notLoggedInDiv.style.display = 'block';
+                signoutLink.style.display = 'none';
+            });
+        };
+
+        clickToRetry.onclick = initKeycloak;
+
+        initKeycloak();
     }
 </script>
 </body>

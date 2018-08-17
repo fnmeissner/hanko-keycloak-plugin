@@ -5,6 +5,7 @@ import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
+import io.hanko.plugin.keycloak.serialization.HankoRequestStatus;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
@@ -94,20 +95,24 @@ public class HankoResourceProvider implements RealmResourceProvider {
     public Response post() {
         ensureIsAuthenticatedUser();
 
-        userStore.setHankoUserId(currentUser(), null);
+        String userIdHanko = userStore.getHankoUserId(currentUser());
+        if (userIdHanko == null) {
+            userIdHanko = UUID.randomUUID().toString();
+            userStore.setHankoUserId(currentUser(), userIdHanko);
+        }
+
         userStore.setHankoRequestId(currentUser(), null);
 
-        String userIdHanko = UUID.randomUUID().toString();
         String username = auth.getUser().getUsername();
 
         try {
             String apikey = HankoUtils.getApiKey(session);
+            String apiKeyId = HankoUtils.getApiKeyId(session);
 
             String remoteAddress = context.getConnection().getRemoteAddr();
-            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(userIdHanko, username, apikey, remoteAddress);
+            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(userIdHanko, username, apikey, apiKeyId, remoteAddress);
 
             userStore.setHankoRequestId(currentUser(), hankoRequest.id);
-            userStore.setHankoUserId(currentUser(), userIdHanko);
 
             String qrCode = hankoRequest.getQrCodeLink();
             HankoRegistrationChallenge hankoRegistrationChallenge = new HankoRegistrationChallenge(qrCode);
@@ -138,7 +143,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
         try {
             String apikey = HankoUtils.getApiKey(session);
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey);
+            String apikeyId = HankoUtils.getApiKeyId(session);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
 
             if (hankoRequest.isConfirmed()) {
                 UserCredentialModel credentials = new UserCredentialModel();
@@ -167,12 +173,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
         String hankoUserId = userStore.getHankoUserId(currentUser());
         String username = currentUser().getUsername();
 
-        userStore.setHankoUserId(currentUser(), null);
         userStore.setHankoRequestId(currentUser(), null);
 
         try {
             String apikey = HankoUtils.getApiKey(session);
-            hankoClient.requestDeregistration(hankoUserId, username, apikey);
+            String apiKeyId = HankoUtils.getApiKeyId(session);
+            hankoClient.requestDeregistration(hankoUserId, username, apikey, apiKeyId);
         } catch (Exception ex) {
             String response = logAndFail("Could not deregister device at Hanko. " +
                     "The device will be disabled in Keycloak enyways.", ex);
@@ -196,6 +202,17 @@ public class HankoResourceProvider implements RealmResourceProvider {
         try {
             Theme theme = session.theme().getTheme(Theme.Type.ACCOUNT);
             UriInfo uriInfo = session.getContext().getUri();
+
+            String redirectUrl = uriInfo.getQueryParameters().getFirst("redirect_url");
+            if(redirectUrl != null && !redirectUrl.equals("")) {
+                attributes.put("redirect_url", redirectUrl);
+            }
+
+            String redirectName = uriInfo.getQueryParameters().getFirst("redirect_name");
+            if(redirectName != null && !redirectName.equals("")) {
+                attributes.put("redirect_name", redirectName);
+            }
+
             URI baseUri = uriInfo.getBaseUri();
             UriBuilder baseUriBuilder = uriInfo.getBaseUriBuilder();
             for (Map.Entry<String, List<String>> e : uriInfo.getQueryParameters().entrySet()) {
@@ -219,6 +236,11 @@ public class HankoResourceProvider implements RealmResourceProvider {
             attributes.put("keycloakClientId", "hanko-account");
             attributes.put("url", new UrlBean(session.getContext().getRealm(), theme, baseUri, baseQueryUri, uriInfo.getRequestUri(), stateChecker));
 
+            if(auth != null && auth.getUser() != null) {
+                Locale locale = session.getContext().resolveLocale(auth.getUser());
+                attributes.put("locale", locale);
+            }
+
             return freeMarker.processTemplate(attributes, "account-hanko.ftl", theme);
         } catch (FreeMarkerException e) {
             logger.error("Failed to process template", e);
@@ -227,6 +249,26 @@ public class HankoResourceProvider implements RealmResourceProvider {
         }
 
         return "";
+    }
+
+    @GET
+    @Path("await/{requestId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response waitForRequest(@PathParam("requestId") String requestId) {
+        try {
+            String apikey = HankoUtils.getApiKey(session);
+            String apikeyId = HankoUtils.getApiKeyId(session);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
+
+            HankoRequestStatus requestStatus = new HankoRequestStatus(hankoRequest.status);
+            Response.ResponseBuilder responseBuilder = Response.ok(requestStatus);
+            return withCorsNoCache(responseBuilder, "POST");
+
+        } catch (Exception ex) {
+            String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
+            Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
+            return withCorsNoCache(responseBuilder, "POST");
+        }
     }
 
     private Response withError(String error, Response.Status status, String method) {

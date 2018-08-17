@@ -9,12 +9,13 @@ import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.services.ServicesLogger;
+import org.keycloak.sessions.AuthenticationSessionModel;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.util.Objects;
 
 import static io.hanko.plugin.keycloak.HankoUtils.getApiKey;
+import static io.hanko.plugin.keycloak.HankoUtils.getApiKeyId;
 
 public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator implements Authenticator {
     private static ServicesLogger logger = ServicesLogger.LOGGER;
@@ -31,7 +32,6 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
     public void action(AuthenticationFlowContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
 
-        // TODO: This code is not called, since concurrent requests are not handled correctly
         if (formData.containsKey("cancel")) {
             logger.debug("login canceled by user");
             cancelLogin(context);
@@ -47,9 +47,10 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
         try {
             // get Hanko API key from the Hanko UAF Authenticator configuration
             String apikey = getApiKey(context.getAuthenticatorConfig());
+            String apikeyId = getApiKeyId(context.getAuthenticatorConfig());
 
             // blocking call to Hanko API
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(hankoRequestId, apikey);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(hankoRequestId, apikey, apikeyId);
 
             if (hankoRequest.isConfirmed()) {
                 context.success();
@@ -70,22 +71,32 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
 
     @Override
     public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
+        AuthenticationSessionModel authSession = authenticationFlowContext.getAuthenticationSession();
+
+        if (HankoUtils.isUserAuthenticated(authSession)) {
+            authenticationFlowContext.success();
+            HankoUtils.removeHankoRequiredAuthNote(authSession);
+            return;
+        }
+
         UserModel currentUser = authenticationFlowContext.getUser();
         String userId = userStore.getHankoUserId(currentUser);
         String username = currentUser.getUsername();
 
         try {
             String apikey = getApiKey(authenticationFlowContext.getAuthenticatorConfig());
+            String apikeyId = getApiKeyId(authenticationFlowContext.getAuthenticatorConfig());
             String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
-            HankoRequest hankoRequest = hankoClient.requestAuthentication(userId, username, apikey, remoteAddress);
+            HankoRequest hankoRequest = hankoClient.requestAuthentication(userId, username, apikey, apikeyId, remoteAddress);
             userStore.setHankoRequestId(currentUser, hankoRequest.id);
+
+            Response response = authenticationFlowContext.form().setAttribute("requestId", hankoRequest.id).createForm("login-hanko.ftl");
+            authenticationFlowContext.challenge(response);
+
         } catch (HankoConfigurationException ex) {
             logger.error("Could not create Hanko request.", ex);
             cancelLogin(authenticationFlowContext);
         }
-
-        Response response = authenticationFlowContext.form().createForm("login-hanko.ftl");
-        authenticationFlowContext.challenge(response);
     }
 
     @Override
@@ -95,9 +106,7 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
 
     @Override
     public boolean configuredFor(KeycloakSession keycloakSession, RealmModel realmModel, UserModel userModel) {
-        boolean isHankoEnabled = keycloakSession.userCredentialManager().isConfiguredFor(realmModel, userModel, HankoCredentialProvider.TYPE);
-        boolean canSkipHanko = Objects.equals(keycloakSession.getAttribute("HANKO_REQIURED"), false);
-        return isHankoEnabled && !canSkipHanko;
+        return keycloakSession.userCredentialManager().isConfiguredFor(realmModel, userModel, HankoCredentialProvider.TYPE);
     }
 
     @Override

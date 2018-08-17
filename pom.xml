@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.hanko.plugins.keycloak</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.1-alpha</version>
     <artifactId>hanko-plugin-keycloak-parent</artifactId>
     <packaging>pom</packaging>
 

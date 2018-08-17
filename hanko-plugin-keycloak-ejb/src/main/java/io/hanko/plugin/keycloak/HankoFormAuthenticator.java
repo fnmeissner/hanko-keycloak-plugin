@@ -130,7 +130,7 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
         if ((password == null || password.isEmpty()) && isHankoEnabled) {
             return true;
         } else if (context.getSession().userCredentialManager().isValid(context.getRealm(), user, credentials)) {
-            context.getSession().setAttribute("HANKO_REQIURED", false);
+            HankoUtils.setIsUserAuthenticated(context.getAuthenticationSession());
             return true;
         } else {
             context.getEvent().user(user);

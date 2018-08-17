@@ -16,7 +16,7 @@ For more information about Hanko, please visit the [Hanko homepage](https://hank
 
 This plugin is currently developed for Keycloak 4.1.0.Final.
 
-## Installation
+## Installation / Update
 
 1. Download the latest version from the [releases page](https://github.com/teamhanko/hanko-keycloak-plugin/releases).
 2. Copy the ear file into the `standalone/deployments` directory of your Keycloaks root directory. 
@@ -38,7 +38,7 @@ This plugin is currently developed for Keycloak 4.1.0.Final.
 8. Add the execution **Hanko Authenticator** to the forms flow and mark it as **required**.
 ![Add Hanko actions](./docs/resources/add-execution-flows.png)
 9. Add the execution **Hanko UAF Auth** and mark it as **optional**.
-10. Open the configuration of the **Hanko UAF Auth** flow by clicking **Actions** -> **Config** and insert your apikey. 
+10. Open the configuration of the **Hanko UAF Auth** flow by clicking **Actions** -> **Config** and insert your apikey and apikey ID. 
 ![Open UAF Config](./docs/resources/open-uaf-config.png)
 11. Open the **Bindings** tab and change the **Browser Flow** to **Browser flow with Hanko**.
 ![Change Binding](./docs/resources/change-binding.png)
@@ -73,6 +73,14 @@ Before you can use the provided account page, you have to add a **Client** to yo
 
 Now you can register and deregister a Hanko Authenticator by visiting the path `/auth/realms/master/hanko/status` at your Keycloak`s root-url.
 
+You can provide a redirect url and a redirect name to the account page by using the url query parameters `redirect_url` and `redirect_name`:
+
+```
+/auth/realms/master/hanko/status?redirect_url=https://playground.hanko.io/&redirect_name=Go+back+to+Hanko+Playground
+```
+
+The redirect link will be displayed to the left of the logout button.
+
 ### API Endpoints
 
 If you prefer to provide a custom account page, you can use the API provided by the plugin.
@@ -81,7 +89,7 @@ Before you can use the API endpoints, you need to configure a client according t
 
 1. Login to your Keycloak administration console.
 2. Goto configuration section **Clients**.
-3. Create a new client and enter the origin of your web application as the root URL.
+3. Create a new client and enter the origin of your web application as the root URL (when you use our examples, this would be `http://localhost:8888/`).
 ![Add hanko-web-client](./docs/resources/add-hanko-web-client.png)
 6. Save the new client.
 
