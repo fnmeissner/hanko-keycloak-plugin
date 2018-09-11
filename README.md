@@ -12,6 +12,10 @@ For more information about Hanko, please visit the [Hanko homepage](https://hank
 - Account-page to register and deregister a Hanko Authenticator
 - REST endpoints to allow registration and deregistration of a Hanko Authenticator
 
+## Architecture / Context
+
+![Hanko Plugin Context](./docs/resources/Keycloak-Hanko-Architecture.png)
+
 ## Compatibility
 
 This plugin is currently developed for Keycloak 4.1.0.Final.
