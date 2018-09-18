@@ -18,7 +18,9 @@ For more information about Hanko, please visit the [Hanko homepage](https://hank
 
 ## Compatibility
 
-This plugin is currently developed for Keycloak 4.1.0.Final.
+This plugin is currently developed for Keycloak 4.x. 
+We provide compiled versions for Keycloak 4.1.0.Final and 4.4.0.Final.
+You can compile the plugin for other releases by setting the Keycloak version in `hanko-plugin-keycloak-ejb/pom.xml` and in `pom.xml`. For more information regarding the compilation, please check chapter [Building](#building).
 
 ## Installation / Update
 
