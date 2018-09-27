@@ -7,7 +7,7 @@ public class HankoHttpClientFactoryApache implements HankoHttpClientFactory {
     private String baseUrl;
 
     public HankoHttpClientFactoryApache() {
-        baseUrl = "https://api.hanko.io/v1";
+        baseUrl = "https://api.hanko.io";
     }
 
     @Override

@@ -17,6 +17,11 @@
 
 package io.hanko.plugin.keycloak;
 
+import io.hanko.client.java.HankoClient;
+import io.hanko.client.java.http.HankoHttpClientFactory;
+import io.hanko.client.java.http.apache.HankoHttpClientFactoryApache;
+import io.hanko.client.java.json.HankoJsonParserFactory;
+import io.hanko.client.java.json.jackson.HankoJsonParserFactoryJackson;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
@@ -43,7 +48,12 @@ public class HankoFormAuthenticatorFactory implements AuthenticatorFactory, Conf
 
     @Override
     public Authenticator create(KeycloakSession session) {
-        return new HankoFormAuthenticator();
+        HankoUserStore userStore = new HankoUserStore();
+        HankoHttpClientFactory httpClientFactory = new HankoHttpClientFactoryApache();
+        HankoJsonParserFactory jsonParserFactory = new HankoJsonParserFactoryJackson();
+        HankoClient hankoClient = new HankoClient(httpClientFactory, jsonParserFactory);
+
+        return new HankoFormAuthenticator(hankoClient, userStore);
     }
 
     @Override
