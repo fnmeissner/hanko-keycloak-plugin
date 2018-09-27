@@ -192,8 +192,12 @@
                         .catch(error => console.error('Error:', error))
                         .then(res => {
                             console.log('response: ', res);
-                            qrcode.innerHTML = "";
-                            updateIsHankoEnabled();
+                            if(res.status === "PENDING") {
+                                setTimeout(function(){ awaitRegistrationComplete(); }, 500);
+                            } else {
+                                qrcode.innerHTML = "";
+                                updateIsHankoEnabled();
+                            }
                         });
             });
         };

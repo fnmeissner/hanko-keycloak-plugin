@@ -18,11 +18,22 @@
         </form>
 
         <script>
-            window.onload = function () {
-                fetch('/auth/realms/${realm.name}/hanko/await/${requestId}').then(response => {
-                    document.getElementById('kc-hanko-login-form').submit();
-                });
-            }
+            const awaitLoginComplete = () => {
+                fetch('/auth/realms/${realm.name}/hanko/request/${requestId}')
+                        .then(response => response.json())
+                        .catch(error => console.error('Error:', error))
+                        .then(response => {
+                            if (response.status === "PENDING") {
+                                setTimeout(function () {
+                                    awaitLoginComplete();
+                                }, 500);
+                            } else {
+                                document.getElementById('kc-hanko-login-form').submit();
+                            }
+                        });
+            };
+
+            window.onload = awaitLoginComplete;
         </script>
     </#if>
 </@layout.registrationLayout>

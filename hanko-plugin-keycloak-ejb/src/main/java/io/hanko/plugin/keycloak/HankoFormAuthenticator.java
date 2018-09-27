@@ -17,6 +17,7 @@
 
 package io.hanko.plugin.keycloak;
 
+import io.hanko.client.java.HankoClient;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
@@ -42,6 +43,13 @@ import java.util.List;
 public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator implements Authenticator {
 
     protected static ServicesLogger log = ServicesLogger.LOGGER;
+    private final HankoClient hankoClient;
+    private final HankoUserStore userStore;
+
+    public HankoFormAuthenticator(HankoClient hankoClient, HankoUserStore userStore) {
+        this.hankoClient = hankoClient;
+        this.userStore = userStore;
+    }
 
     @Override
     public void action(AuthenticationFlowContext context) {
@@ -121,7 +129,19 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
     @Override
     public boolean validatePassword(AuthenticationFlowContext context, UserModel user, MultivaluedMap<String, String> inputData) {
 
-        boolean isHankoEnabled = context.getSession().userCredentialManager().isConfiguredFor(context.getRealm(), user, HankoCredentialProvider.TYPE);
+        boolean isHankoEnabled = false;
+
+        try {
+            KeycloakSession session = context.getSession();
+            String hankoUserId = userStore.getHankoUserId(user);
+
+            isHankoEnabled =
+                    context.getSession().userCredentialManager().isConfiguredFor(context.getRealm(), user, HankoCredentialProvider.TYPE) &&
+                            hankoUserId != null &&
+                            hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+        } catch (Exception ex) {
+            log.error("Could not determine Hanko Registration status", ex);
+        }
 
         String password = inputData.getFirst(CredentialRepresentation.PASSWORD);
         List<CredentialInput> credentials = new LinkedList<>();

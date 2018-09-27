@@ -4,6 +4,7 @@ import io.hanko.client.java.http.HankoHttpClient;
 import io.hanko.client.java.http.HankoHttpClientFactory;
 import io.hanko.client.java.json.HankoJsonParser;
 import io.hanko.client.java.json.HankoJsonParserFactory;
+import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 
@@ -22,7 +23,7 @@ public class HankoClient {
         HankoHttpClient httpClient = httpClientFactory.create();
         String json = "{\"operation\":\"REG\",\"username\":\"" + username + "\",\"userId\":\"" + userId + "\"," +
                 "\"clientData\":{\"remoteAddress\":\"" + remoteAddress + "\"}}";
-        InputStream is = httpClient.post("/uaf/requests", json, apiKey, apiKeyId);
+        InputStream is = httpClient.post("/v1/uaf/requests", json, apiKey, apiKeyId);
         HankoRegistrationRequest hankoRequest = jsonParser.parse(is, HankoRegistrationRequest.class);
         httpClient.close();
         return hankoRequest;
@@ -31,17 +32,24 @@ public class HankoClient {
     public HankoRegistrationRequest requestDeregistration(String userId, String username, String apiKey, String apiKeyId) {
         HankoHttpClient httpClient = httpClientFactory.create();
         String json = "{\"operation\":\"DEREG\",\"username\":\"" + username + "\",\"userId\":\"" + userId + "\"}";
-        InputStream is = httpClient.post("/uaf/requests", json, apiKey, apiKeyId);
+        InputStream is = httpClient.post("/v1/uaf/requests", json, apiKey, apiKeyId);
         HankoRegistrationRequest hankoRequest = jsonParser.parse(is, HankoRegistrationRequest.class);
         httpClient.close();
         return hankoRequest;
+    }
+
+    public Boolean hasRegisteredDevices(String userId, String apiKey, String apiKeyId) {
+        HankoHttpClient httpClient = httpClientFactory.create();
+        InputStream is = httpClient.get("/mgmt/v1/registrations/" + userId, apiKey, apiKeyId);
+        HankoDevice[] devices = jsonParser.parse(is, HankoDevice[].class);
+        return devices.length > 0;
     }
 
     public HankoRequest requestAuthentication(String userId, String username, String apikey, String apiKeyId, String remoteAddress) {
         HankoHttpClient httpClient = httpClientFactory.create();
         String json = "{\"operation\":\"AUTH\",\"username\":\"" + username + "\",\"userId\":\"" + userId + "\"," +
                 "\"clientData\":{\"remoteAddress\":\"" + remoteAddress + "\"}}";
-        InputStream is = httpClient.post("/uaf/requests", json, apikey, apiKeyId);
+        InputStream is = httpClient.post("/v1/uaf/requests", json, apikey, apiKeyId);
         HankoRequest hankoRequest = jsonParser.parse(is, HankoRequest.class);
         httpClient.close();
         return hankoRequest;
@@ -49,7 +57,7 @@ public class HankoClient {
 
     public HankoRequest awaitConfirmation(String id, String apiKey, String apiKeyId) {
         HankoHttpClient httpClient = httpClientFactory.create();
-        InputStream is = httpClient.get("/requests/finished/" + id, apiKey, apiKeyId);
+        InputStream is = httpClient.get("/v1/uaf/requests/" + id, apiKey, apiKeyId);
         HankoRequest hankoRequest = jsonParser.parse(is, HankoRegistrationRequest.class);
         httpClient.close();
         return hankoRequest;

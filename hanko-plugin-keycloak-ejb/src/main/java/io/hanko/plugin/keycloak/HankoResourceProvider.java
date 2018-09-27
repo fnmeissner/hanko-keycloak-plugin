@@ -5,7 +5,6 @@ import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
-import io.hanko.plugin.keycloak.serialization.HankoRequestStatus;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
@@ -84,9 +83,19 @@ public class HankoResourceProvider implements RealmResourceProvider {
         boolean isConfiguredForHanko = session.userCredentialManager().isConfiguredFor(
                 context.getRealm(), auth.getUser(), HankoCredentialProvider.TYPE);
 
-        HankoStatus status = new HankoStatus(isConfiguredForHanko);
-        Response.ResponseBuilder responseBuilder = Response.ok(status);
-        return withCorsNoCache(responseBuilder, "GET");
+        try {
+            String hankoUserId = userStore.getHankoUserId(currentUser());
+            boolean hasRegisteredDevices = hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+
+            HankoStatus status = new HankoStatus(isConfiguredForHanko && hasRegisteredDevices);
+            Response.ResponseBuilder responseBuilder = Response.ok(status);
+            return withCorsNoCache(responseBuilder, "GET");
+
+        } catch(Exception ex) {
+            String response = logAndFail("Could not fetch user devices from Hanko.", ex);
+            Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
+            return withCorsNoCache(responseBuilder, "GET");
+        }
     }
 
     @POST
@@ -151,13 +160,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
                 credentials.setType(HankoCredentialProvider.TYPE);
                 credentials.setValue(hankoUserId);
                 session.userCredentialManager().updateCredential(context.getRealm(), auth.getUser(), credentials);
-
-                HankoStatus hankoStatus = new HankoStatus(false);
-                Response.ResponseBuilder responseBuilder = Response.ok(hankoStatus);
-                return withCorsNoCache(responseBuilder, "POST");
             }
 
-            return withError("HANKO request confirmation failed", Response.Status.FORBIDDEN, "POST");
+            Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
+            return withCorsNoCache(responseBuilder, "POST");
         } catch (Exception ex) {
             String response = logAndFail("Could not request Hanko registration", ex);
             return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "POST");
@@ -204,12 +210,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
             UriInfo uriInfo = session.getContext().getUri();
 
             String redirectUrl = uriInfo.getQueryParameters().getFirst("redirect_url");
-            if(redirectUrl != null && !redirectUrl.equals("")) {
+            if (redirectUrl != null && !redirectUrl.equals("")) {
                 attributes.put("redirect_url", redirectUrl);
             }
 
             String redirectName = uriInfo.getQueryParameters().getFirst("redirect_name");
-            if(redirectName != null && !redirectName.equals("")) {
+            if (redirectName != null && !redirectName.equals("")) {
                 attributes.put("redirect_name", redirectName);
             }
 
@@ -236,7 +242,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             attributes.put("keycloakClientId", "hanko-account");
             attributes.put("url", new UrlBean(session.getContext().getRealm(), theme, baseUri, baseQueryUri, uriInfo.getRequestUri(), stateChecker));
 
-            if(auth != null && auth.getUser() != null) {
+            if (auth != null && auth.getUser() != null) {
                 Locale locale = session.getContext().resolveLocale(auth.getUser());
                 attributes.put("locale", locale);
             }
@@ -252,16 +258,16 @@ public class HankoResourceProvider implements RealmResourceProvider {
     }
 
     @GET
-    @Path("await/{requestId}")
+    @Path("request/{requestId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response waitForRequest(@PathParam("requestId") String requestId) {
         try {
             String apikey = HankoUtils.getApiKey(session);
             String apikeyId = HankoUtils.getApiKeyId(session);
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
 
-            HankoRequestStatus requestStatus = new HankoRequestStatus(hankoRequest.status);
-            Response.ResponseBuilder responseBuilder = Response.ok(requestStatus);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
+            Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
+
             return withCorsNoCache(responseBuilder, "POST");
 
         } catch (Exception ex) {
@@ -279,11 +285,25 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
     private Response withCorsNoCache(Response.ResponseBuilder responseBuilder, String method) {
         Response.ResponseBuilder withoutCache = responseBuilder.cacheControl(CacheControlUtil.noCache());
-        return Cors.add(request, withoutCache)
-                .allowedMethods(method)
-                .allowedOrigins(token)
-                .auth()
-                .build();
+        if(token != null) {
+            return Cors.add(request, withoutCache)
+                    .allowedMethods(method)
+                    .allowedOrigins(token)
+                    .auth()
+                    .build();
+        } else if(context.getClient() != null) {
+            return Cors.add(request, withoutCache)
+                    .allowedMethods(method)
+                    .allowedOrigins(uriInfo, context.getClient())
+                    .auth()
+                    .build();
+        } else {
+            return Cors.add(request, withoutCache)
+                    .allowAllOrigins()
+                    .allowedMethods(method)
+                    .auth()
+                    .build();
+        }
     }
 
     private String logAndFail(String message, Exception ex) {
