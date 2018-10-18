@@ -30,22 +30,22 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>4.4.0.Final</version>
+            <version>4.5.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi</artifactId>
-            <version>4.4.0.Final</version>
+            <version>4.5.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi-private</artifactId>
-            <version>4.4.0.Final</version>
+            <version>4.5.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-services</artifactId>
-            <version>4.4.0.Final</version>
+            <version>4.5.0.Final</version>
         </dependency>
     </dependencies>
 

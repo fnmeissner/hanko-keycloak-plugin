@@ -17,12 +17,17 @@
                    type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
         </form>
 
+        <script src="${url.resourcesPath}/js/hanko.js"></script>
         <script>
             const awaitLoginComplete = () => {
-                fetch('/auth/realms/${realm.name}/hanko/request/${requestId}')
+                fetchWithTimeout(() => fetch('/auth/realms/${realm.name}/hanko/request/${requestId}'))
                         .then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(response => {
+                        .catch(error => { 
+                            console.error('Error:', error) 
+                            setTimeout(function () {
+                                awaitLoginComplete();
+                            }, 1000);
+                        }).then(response => {
                             if (response.status === "PENDING") {
                                 setTimeout(function () {
                                     awaitLoginComplete();
