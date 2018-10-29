@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import static io.hanko.plugin.keycloak.HankoUtils.getApiKey;
 import static io.hanko.plugin.keycloak.HankoUtils.getApiKeyId;
+import static io.hanko.plugin.keycloak.HankoUtils.getApiUrl;
 
 public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator implements Authenticator {
     private static ServicesLogger logger = ServicesLogger.LOGGER;
@@ -46,11 +47,12 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
 
         try {
             // get Hanko API key from the Hanko UAF Authenticator configuration
+            String apiUrl = getApiUrl(context.getAuthenticatorConfig());
             String apikey = getApiKey(context.getAuthenticatorConfig());
             String apikeyId = getApiKeyId(context.getAuthenticatorConfig());
 
             // blocking call to Hanko API
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(hankoRequestId, apikey, apikeyId);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(hankoRequestId, apiUrl, apikey, apikeyId);
 
             if (hankoRequest.isConfirmed()) {
                 context.success();
@@ -84,10 +86,11 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
         String username = currentUser.getUsername();
 
         try {
+            String apiUrl = getApiUrl(authenticationFlowContext.getAuthenticatorConfig());
             String apikey = getApiKey(authenticationFlowContext.getAuthenticatorConfig());
             String apikeyId = getApiKeyId(authenticationFlowContext.getAuthenticatorConfig());
             String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
-            HankoRequest hankoRequest = hankoClient.requestAuthentication(userId, username, apikey, apikeyId, remoteAddress);
+            HankoRequest hankoRequest = hankoClient.requestAuthentication(userId, username, apiUrl, apikey, apikeyId, remoteAddress);
             userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
             Response response = authenticationFlowContext.form().setAttribute("requestId", hankoRequest.id).createForm("login-hanko.ftl");

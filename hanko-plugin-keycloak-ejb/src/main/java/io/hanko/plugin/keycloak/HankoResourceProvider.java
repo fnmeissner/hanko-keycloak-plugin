@@ -1,12 +1,15 @@
 package io.hanko.plugin.keycloak;
 
 import io.hanko.client.java.HankoClient;
+import io.hanko.client.java.models.ChangePassword;
+import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.keycloak.credential.CredentialModel;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
 import org.keycloak.forms.account.freemarker.model.UrlBean;
 import org.keycloak.models.KeycloakContext;
@@ -68,7 +71,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             logger.error("Request null");
         }
         return Cors.add(request, Response.ok())
-                .allowedMethods("GET", "POST")
+                .allowedMethods("GET", "POST", "DELETE")
                 .allowedOrigins(uriInfo, context.getClient())
                 .preflight()
                 .auth()
@@ -85,7 +88,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
         try {
             String hankoUserId = userStore.getHankoUserId(currentUser());
-            boolean hasRegisteredDevices = hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+            boolean hasRegisteredDevices = hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiUrl(session),
+                    HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
 
             HankoStatus status = new HankoStatus(isConfiguredForHanko && hasRegisteredDevices);
             Response.ResponseBuilder responseBuilder = Response.ok(status);
@@ -115,11 +119,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
         String username = auth.getUser().getUsername();
 
         try {
+            String apiUrl = HankoUtils.getApiUrl(session);
             String apikey = HankoUtils.getApiKey(session);
             String apiKeyId = HankoUtils.getApiKeyId(session);
 
             String remoteAddress = context.getConnection().getRemoteAddr();
-            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(userIdHanko, username, apikey, apiKeyId, remoteAddress);
+            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(userIdHanko, username, apiUrl, apikey, apiKeyId, remoteAddress);
 
             userStore.setHankoRequestId(currentUser(), hankoRequest.id);
 
@@ -151,9 +156,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
         }
 
         try {
+            String apiUrl = HankoUtils.getApiUrl(session);
             String apikey = HankoUtils.getApiKey(session);
             String apikeyId = HankoUtils.getApiKeyId(session);
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apiUrl, apikey, apikeyId);
 
             if (hankoRequest.isConfirmed()) {
                 UserCredentialModel credentials = new UserCredentialModel();
@@ -182,9 +188,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
         userStore.setHankoRequestId(currentUser(), null);
 
         try {
+            String apiUrl = HankoUtils.getApiUrl(session);
             String apikey = HankoUtils.getApiKey(session);
             String apiKeyId = HankoUtils.getApiKeyId(session);
-            hankoClient.requestDeregistration(hankoUserId, username, apikey, apiKeyId);
+            hankoClient.requestDeregistration(hankoUserId, username, apiUrl, apikey, apiKeyId);
         } catch (Exception ex) {
             String response = logAndFail("Could not deregister device at Hanko. " +
                     "The device will be disabled in Keycloak enyways.", ex);
@@ -262,10 +269,11 @@ public class HankoResourceProvider implements RealmResourceProvider {
     @Produces(MediaType.APPLICATION_JSON)
     public Response waitForRequest(@PathParam("requestId") String requestId) {
         try {
+            String apiUrl = HankoUtils.getApiUrl(session);
             String apikey = HankoUtils.getApiKey(session);
             String apikeyId = HankoUtils.getApiKeyId(session);
 
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apikey, apikeyId);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apiUrl, apikey, apikeyId);
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
 
             return withCorsNoCache(responseBuilder, "POST");
@@ -275,6 +283,84 @@ public class HankoResourceProvider implements RealmResourceProvider {
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
             return withCorsNoCache(responseBuilder, "POST");
         }
+    }
+
+    @GET
+    @Path("devices")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDevices() {
+        ensureIsAuthenticatedUser();
+
+        String hankoUserId = userStore.getHankoUserId(currentUser());
+        String requestId = userStore.getHankoRequestId(currentUser());
+
+        AccessToken token = auth.getToken();
+
+        if (hankoUserId == null) {
+            return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "POST");
+        }
+
+        try {
+            String apiUrl = HankoUtils.getApiUrl(session);
+            String apikey = HankoUtils.getApiKey(session);
+            String apikeyId = HankoUtils.getApiKeyId(session);
+            HankoDevice[] devices = hankoClient.getRegisteredDevices(hankoUserId, apiUrl, apikey, apikeyId);
+
+            Response.ResponseBuilder responseBuilder = Response.ok(devices);
+            return withCorsNoCache(responseBuilder, "POST");
+        } catch (Exception ex) {
+            String response = logAndFail("Could not retrieve users devices", ex);
+            return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "GET");
+        }
+    }
+
+    @DELETE
+    @Path("devices/{deviceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteDevice(@PathParam("deviceId") String deviceId) {
+        ensureIsAuthenticatedUser();
+
+        String hankoUserId = userStore.getHankoUserId(currentUser());
+        String username = auth.getUser().getUsername();
+
+        AccessToken token = auth.getToken();
+
+        if (hankoUserId == null) {
+            return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "DELETE");
+        }
+
+        try {
+            String apiUrl = HankoUtils.getApiUrl(session);
+            String apikey = HankoUtils.getApiKey(session);
+            String apikeyId = HankoUtils.getApiKeyId(session);
+            HankoRequest request = hankoClient.deleteDevice(hankoUserId, username, deviceId, apiUrl, apikey, apikeyId);
+
+            Response.ResponseBuilder responseBuilder = Response.ok(request);
+            return withCorsNoCache(responseBuilder, "DELETE");
+        } catch (Exception ex) {
+            String response = logAndFail("Could not delete users device", ex);
+            return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "DELETE");
+        }
+    }
+
+    @POST
+    @Path("password")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changePassword(ChangePassword changePassword) {
+        ensureIsAuthenticatedUser();
+
+        String hankoUserId = userStore.getHankoUserId(currentUser());
+        String username = currentUser().getUsername();
+
+        UserCredentialModel credentials = new UserCredentialModel();
+        credentials.setType(CredentialModel.PASSWORD);
+        credentials.setValue(changePassword.newPassword);
+
+        session.userCredentialManager().updateCredential(context.getRealm(), auth.getUser(), credentials);
+
+
+        Response.ResponseBuilder responseBuilder = Response.ok();
+        return withCorsNoCache(responseBuilder, "POST");
     }
 
     private Response withError(String error, Response.Status status, String method) {

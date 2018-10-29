@@ -1,0 +1,146 @@
+html,
+body,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+$primary-color: rgb(250, 250, 250);
+$background-color: #333;
+$container-color: rgb(33, 33, 33);
+
+%font-default {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 21px;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+%font-label {
+  @extend %font-default;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+%font-header {
+  @extend %font-default;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+body {
+  font: 100% Montserrat, Arial, sans-serif;
+  color: $primary-color;
+  background-color: $background-color;
+}
+
+div#root {
+  display: flex;
+  justify-content: center;
+}
+
+div#content {
+  @extend %font-default;
+  width: 1400px;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+div.container {
+  background-color: $container-color;
+  border-radius: 3px;
+  margin: 50px;
+  padding: 50px;
+}
+
+div.center {
+  display: flex;
+  justify-content: center;
+}
+
+.spacer {
+  margin-bottom: 25px;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.flex {
+  display: flex;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.margin-bottom {
+  margin-bottom: 25px;
+}
+
+.formfield {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+}
+
+table {
+  @extend %font-default;
+  border-collapse: collapse;
+  width: 100%;
+  td,
+  th {
+    padding: 10px;
+  }
+}
+
+@keyframes fadein {
+  from {
+    height: 0px;
+  }
+  to {
+    height: 256px;
+  }
+}
+
+.fadein {
+  animation: fadein 500ms;
+}
+
+button {
+  @extend %font-default;
+  border: 1px solid rgb(234, 89, 83);
+  background-color: rgb(234, 89, 83);
+  color: $primary-color;
+  border-radius: 3px;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 7px;
+  cursor: pointer;
+  width: 220px;
+}
+
+input {
+  @extend %font-default;
+  background-color: transparent;
+  border-style: none none solid;
+  border-width: 0px 0px 1px;
+  border-color: currentcolor currentcolor rgb(51, 51, 51);
+  outline: currentcolor none 0px;
+  padding-bottom: 10px;
+  padding-top: 7px;
+  color: white;
+}
+
+label {
+  @extend %font-label;
+}
+
+h1 {
+  @extend %font-header;
+  margin-bottom: 25px;
+}

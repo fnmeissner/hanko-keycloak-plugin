@@ -138,7 +138,7 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
             isHankoEnabled =
                     context.getSession().userCredentialManager().isConfiguredFor(context.getRealm(), user, HankoCredentialProvider.TYPE) &&
                             hankoUserId != null &&
-                            hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+                            hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiUrl(session), HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
         } catch (Exception ex) {
             log.error("Could not determine Hanko Registration status", ex);
         }

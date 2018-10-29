@@ -8,6 +8,7 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 import java.util.Formatter;
 
 public class HankoUtils {
+    static String CONFIG_API_URL = "hanko.apiurl";
     static String CONFIG_APIKEY = "hanko.apikey";
     static String CONFIG_APIKEYID = "hanko.apikeyid";
     static String AUTH_NOTE_IS_USER_AUTHENTICATED = "HANKO_REQUIRED";
@@ -29,6 +30,20 @@ public class HankoUtils {
             throw new HankoConfigurationException("Could not find Hanko apikey because the realm is null. " +
                     "There might be a problem with you authentication flow configuration.");
         }
+    }
+
+    static String getApiUrl(KeycloakSession session) throws HankoConfigurationException {
+        verifySession(session);
+
+        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
+            if (config.getConfig().containsKey(CONFIG_API_URL)) {
+                return getApiUrl(config);
+            }
+        }
+
+        throw new HankoConfigurationException("Could not find Hanko API url. " +
+                "Please set the Hanko API url in the configuration for the Hanko UAF Authenticator " +
+                "in your authentication flow.");
     }
 
     static String getApiKey(KeycloakSession session) throws HankoConfigurationException {
@@ -54,9 +69,19 @@ public class HankoUtils {
             }
         }
 
-        throw new HankoConfigurationException("Could not find Hanko apikey. " +
-                "Please set the Hanko apikey in the configuration for the Hanko UAF Authenticator " +
+        throw new HankoConfigurationException("Could not find Hanko apikey ID. " +
+                "Please set the Hanko apikey ID in the configuration for the Hanko UAF Authenticator " +
                 "in your authentication flow.");
+    }
+
+    static String getApiUrl(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        String apiUrl = config.getConfig().get(CONFIG_API_URL);
+        if (apiUrl == null || apiUrl.trim().isEmpty()) {
+            throw new HankoConfigurationException("Could not find Hanko API URL. " +
+                    "Please set the Hanko API URL in the configuration for the Hanko UAF Authenticator " +
+                    "in your authentication flow.");
+        }
+        return apiUrl;
     }
 
     static String getApiKey(AuthenticatorConfigModel config) throws HankoConfigurationException {
