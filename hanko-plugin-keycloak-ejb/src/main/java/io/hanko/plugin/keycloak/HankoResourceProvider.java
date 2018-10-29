@@ -246,6 +246,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             attributes.put("realm", new RealmBean(context.getRealm()));
             attributes.put("keycloakUrl", baseUri);
             attributes.put("keycloakRealm", context.getRealm().getName());
+            attributes.put("keycloakRealmId", context.getRealm().getId());
             attributes.put("keycloakClientId", "hanko-account");
             attributes.put("url", new UrlBean(session.getContext().getRealm(), theme, baseUri, baseQueryUri, uriInfo.getRequestUri(), stateChecker));
 

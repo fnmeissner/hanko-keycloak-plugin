@@ -1,5 +1,4 @@
 const path = require('path')
-const HtmlPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
@@ -44,13 +43,5 @@ module.exports = {
     path: path.join(__dirname, 'dist'),
     publicPath: '/'
   },
-  plugins: [
-    new CleanWebpackPlugin(path.join(__dirname, 'dist')),
-    new HtmlPlugin({
-      minify: {
-        collapseWhitespace: true
-      },
-      template: 'public/index.html'
-    })
-  ]
+  plugins: [new CleanWebpackPlugin(path.join(__dirname, 'dist'))]
 }

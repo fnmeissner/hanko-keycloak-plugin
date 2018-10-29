@@ -8,15 +8,23 @@ import { NotLoggedIn } from './containers/NotLoggedIn'
 
 require('./styles/main.scss')
 
+const keycloakUrl = (window as any).keycloakUrl
+  ? (window as any).keycloakUrl
+  : `${process.env.KEYCLOAK_URL}/auth`
+
+const realm = (window as any).realmId
+  ? (window as any).realmId
+  : `${process.env.KEYCLOAK_REALM}`
+
 const keycloak = Keycloak({
-  url: `${process.env.KEYCLOAK_URL}/auth`,
-  realm: `${process.env.KEYCLOAK_REALM}`,
+  url: keycloakUrl,
+  realm: realm,
   clientId: 'hanko-account'
 })
 
 keycloak
   .init({ onLoad: 'login-required' })
-  .success(isLoggedId => {
+  .success(_ => {
     ReactDOM.render(<App keycloak={keycloak} />, document.getElementById(
       'root'
     ) as HTMLElement)
