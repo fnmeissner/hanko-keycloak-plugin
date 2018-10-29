@@ -8,9 +8,13 @@ build docker image:
     VERSION: ${CI_COMMIT_SHA}
   tags:
     - shell
+  artifacts:
+    paths:
+      - ./themes.zip
+      - ./target/hanko-plugin-keycloak.ear
+    expire_in: 1 week
   script:
     - ./build.sh
-    -
 
 deploy develop:
   stage: deploy
