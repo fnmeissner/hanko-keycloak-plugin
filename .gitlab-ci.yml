@@ -11,7 +11,7 @@ build artifacts:
   artifacts:
     paths:
       - ./themes.zip
-      - ./target/hanko-plugin-keycloak.ear
+      - ./hanko-plugin-keycloak-ear/target/hanko-plugin-keycloak.ear
     expire_in: 1 week
   script:
     - ./build.sh
