@@ -30,7 +30,7 @@ deploy develop:
     - cd hanko-infrastructure-keycloak
     - git checkout master
     - cp ../themes.zip hanko-plugin/themes.zip
-    - cp ../target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
+    - cp ../hanko-plugin-keycloak-ear/target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
     - git add .
     - git commit -m "[hanko-keycloak-plugin] update develop version to ${CI_COMMIT_SHA}"
     - git push origin master
@@ -53,7 +53,7 @@ deploy production:
     - cd hanko-infrastructure-keycloak
     - git checkout production
     - cp ../themes.zip hanko-plugin/themes.zip
-    - cp ../target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
+    - cp ../hanko-plugin-keycloak-ear/target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
     - git add .
     - git commit -m "[hanko-keycloak-plugin] update production version to ${CI_COMMIT_SHA}"
     - git push origin production
