@@ -1,0 +1,60 @@
+stages:
+  - build
+  - deploy
+
+build docker image:
+  stage: build
+  variables:
+    VERSION: ${CI_COMMIT_SHA}
+  tags:
+    - shell
+  script:
+    - ./build.sh
+    -
+
+deploy develop:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - shell
+  environment:
+    name: develop
+    url: https://auth.hanko.io/
+  script:
+    - git clone git@gitlab.com:hanko/hanko-infrastructure-keycloak.git
+    - cd hanko-infrastructure-keycloak
+    - git checkout master
+    - cp ../themes.zip hanko-plugin/themes.zip
+    - cp ../target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
+    - git add .
+    - git commit -m "[hanko-keycloak-plugin] update develop version to ${CI_COMMIT_SHA}"
+    - git push origin master
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo ${SSH_PRIVATE_KEY} | base64 --decode)
+    - git config --global user.email ${GITLAB_USER_EMAIL}
+    - git config --global user.name ${GITLAB_USER_NAME}
+
+deploy production:
+  stage: deploy
+  when: manual
+  tags:
+    - docker
+  environment:
+    name: production
+    url: https://api.hanko.io/
+  script:
+    - git clone git@gitlab.com:hanko/hanko-infrastructure-keycloak.git
+    - cd hanko-infrastructure-keycloak
+    - git checkout production
+    - cp ../themes.zip hanko-plugin/themes.zip
+    - cp ../target/hanko-plugin-keycloak.ear hanko-plugin/hanko-plugin-keycloak.ear
+    - git add .
+    - git commit -m "[hanko-keycloak-plugin] update production version to ${CI_COMMIT_SHA}"
+    - git push origin production
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo ${SSH_PRIVATE_KEY} | base64 --decode)
+    - git config --global user.email ${GITLAB_USER_EMAIL}
+    - git config --global user.name ${GITLAB_USER_NAME}
