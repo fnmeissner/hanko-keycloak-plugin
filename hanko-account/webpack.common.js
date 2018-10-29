@@ -1,5 +1,6 @@
 const path = require('path')
 const HtmlPlugin = require('html-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   entry: './src/index.tsx',
@@ -44,6 +45,7 @@ module.exports = {
     publicPath: '/'
   },
   plugins: [
+    new CleanWebpackPlugin(path.join(__dirname, 'dist')),
     new HtmlPlugin({
       minify: {
         collapseWhitespace: true
