@@ -2,7 +2,7 @@ stages:
   - build
   - deploy
 
-build docker image:
+build artifacts:
   stage: build
   variables:
     VERSION: ${CI_COMMIT_SHA}
@@ -24,7 +24,7 @@ deploy develop:
     - shell
   environment:
     name: develop
-    url: https://auth.hanko.io/
+    url: https://auth.develop.hanko.io/
   script:
     - git clone git@gitlab.com:hanko/hanko-infrastructure-keycloak.git
     - cd hanko-infrastructure-keycloak
@@ -47,7 +47,7 @@ deploy production:
     - docker
   environment:
     name: production
-    url: https://api.hanko.io/
+    url: https://auth.hanko.io/
   script:
     - git clone git@gitlab.com:hanko/hanko-infrastructure-keycloak.git
     - cd hanko-infrastructure-keycloak
