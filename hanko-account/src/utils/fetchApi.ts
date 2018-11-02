@@ -5,10 +5,12 @@ export const fetchApi = (
   body: any | undefined = undefined
 ) => {
   return new Promise<any>((success, fail) => {
+    const keycloakUrl = (window as any).keycloakUrl
+      ? (window as any).keycloakUrl
+      : `${process.env.KEYCLOAK_URL}/auth`
+
     keycloak.updateToken(30).success(_ => {
-      const url = `${process.env.KEYCLOAK_URL}/auth/realms/${
-        process.env.KEYCLOAK_REALM
-      }${path}`
+      const url = `${keycloakUrl}/realms/${process.env.KEYCLOAK_REALM}${path}`
 
       const headers = (body
         ? {
