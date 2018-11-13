@@ -11,6 +11,10 @@ public class HankoUtils {
     static String CONFIG_API_URL = "hanko.apiurl";
     static String CONFIG_APIKEY = "hanko.apikey";
     static String CONFIG_APIKEYID = "hanko.apikeyid";
+    static String CONFIG_HAS_PROXY = "hanko.hasproxy";
+    static String CONFIG_PROXY_ADDRESS = "hanko.proxyaddress";
+    static String CONFIG_PROXY_PORT = "hanko.proxyport";
+    static String CONFIG_PROXY_TYPE= "hanko.proxytype";
     static String AUTH_NOTE_IS_USER_AUTHENTICATED = "HANKO_REQUIRED";
 
     private static ServicesLogger logger = ServicesLogger.LOGGER;
@@ -33,76 +37,53 @@ public class HankoUtils {
     }
 
     static String getApiUrl(KeycloakSession session) throws HankoConfigurationException {
-        verifySession(session);
-
-        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
-            if (config.getConfig().containsKey(CONFIG_API_URL)) {
-                return getApiUrl(config);
-            }
-        }
-
-        throw new HankoConfigurationException("Could not find Hanko API url. " +
-                "Please set the Hanko API url in the configuration for the Hanko UAF Authenticator " +
-                "in your authentication flow.");
+        return getNonEmptyConfigValue(session, CONFIG_API_URL, "API url");
     }
 
     static String getApiKey(KeycloakSession session) throws HankoConfigurationException {
-        verifySession(session);
-
-        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
-            if (config.getConfig().containsKey(CONFIG_APIKEY)) {
-                return getApiKey(config);
-            }
-        }
-
-        throw new HankoConfigurationException("Could not find Hanko apikey. " +
-                "Please set the Hanko apikey in the configuration for the Hanko UAF Authenticator " +
-                "in your authentication flow.");
+        return getNonEmptyConfigValue(session, CONFIG_APIKEY, "API key secret");
     }
 
     static String getApiKeyId(KeycloakSession session) throws HankoConfigurationException {
-        verifySession(session);
-
-        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
-            if (config.getConfig().containsKey(CONFIG_APIKEYID)) {
-                return getApiKeyId(config);
-            }
-        }
-
-        throw new HankoConfigurationException("Could not find Hanko apikey ID. " +
-                "Please set the Hanko apikey ID in the configuration for the Hanko UAF Authenticator " +
-                "in your authentication flow.");
+        return getNonEmptyConfigValue(session, CONFIG_APIKEYID, "API key id");
     }
 
     static String getApiUrl(AuthenticatorConfigModel config) throws HankoConfigurationException {
-        String apiUrl = config.getConfig().get(CONFIG_API_URL);
-        if (apiUrl == null || apiUrl.trim().isEmpty()) {
-            throw new HankoConfigurationException("Could not find Hanko API URL. " +
-                    "Please set the Hanko API URL in the configuration for the Hanko UAF Authenticator " +
-                    "in your authentication flow.");
-        }
-        return apiUrl;
+        return getNonEmptyConfigValue(config, CONFIG_API_URL, "API url");
     }
 
     static String getApiKey(AuthenticatorConfigModel config) throws HankoConfigurationException {
-        String apikey = config.getConfig().get(CONFIG_APIKEY);
-        if (apikey == null || apikey.trim().isEmpty()) {
-            throw new HankoConfigurationException("Could not find Hanko apikey. " +
-                    "Please set the Hanko apikey in the configuration for the Hanko UAF Authenticator " +
-                    "in your authentication flow.");
-        }
-        return apikey;
+        return getNonEmptyConfigValue(config, CONFIG_APIKEY, "API key secret");
+    }
+    
+    static String getApiKeyId(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(config, CONFIG_APIKEYID, "API key id");
     }
 
+    private static String getNonEmptyConfigValue(KeycloakSession session, String key, String description) throws HankoConfigurationException {
+        verifySession(session);
 
-    static String getApiKeyId(AuthenticatorConfigModel config) throws HankoConfigurationException {
-        String apiKeyId = config.getConfig().get(CONFIG_APIKEYID);
-        if (apiKeyId == null || apiKeyId.trim().isEmpty()) {
-            throw new HankoConfigurationException("Could not find Hanko apikey id. " +
-                    "Please set the Hanko apikey id in the configuration for the Hanko UAF Authenticator " +
-                    "in your authentication flow.");
+        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
+            if (config.getConfig().containsKey(key)) {
+                return getNonEmptyConfigValue(config, key, description);
+            }
         }
-        return apiKeyId;
+
+        return throwHankoConfigException(key, description);
+    }
+
+    private static String getNonEmptyConfigValue(AuthenticatorConfigModel config, String key, String description) throws HankoConfigurationException {
+        String value = config.getConfig().get(key);
+        if(key == null || key.trim().isEmpty()) {
+            throwHankoConfigException(key, description);
+        }
+        return value;
+    }
+
+    private static String throwHankoConfigException(String key, String description) throws HankoConfigurationException {
+        throw new HankoConfigurationException("Could not find " + description + ". " +
+                "Please set its value in the configuration for the Hanko UAF Authenticator " +
+                "in your authentication flow.");
     }
 
     static void setIsUserAuthenticated(AuthenticationSessionModel authSession) {

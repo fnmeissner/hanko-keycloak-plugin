@@ -15,6 +15,7 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.provider.ProviderConfigProperty;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HankoUafAuthenticatorFactory implements AuthenticatorFactory, ConfigurableAuthenticatorFactory {
@@ -112,6 +113,38 @@ public class HankoUafAuthenticatorFactory implements AuthenticatorFactory, Confi
         property.setLabel("Hanko API KEY");
         property.setType(ProviderConfigProperty.PASSWORD);
         property.setHelpText("Hanko API KEY.");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_HAS_PROXY);
+        property.setLabel("Use Proxy server");
+        property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
+        property.setHelpText("Use Proxy server.");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_PROXY_ADDRESS);
+        property.setLabel("Proxy address");
+        property.setType(ProviderConfigProperty.STRING_TYPE);
+        property.setHelpText("Proxy address");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_PROXY_PORT);
+        property.setLabel("Proxy port");
+        property.setType(ProviderConfigProperty.STRING_TYPE);
+        property.setHelpText("Proxy port");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_PROXY_TYPE);
+        property.setLabel("Proxy type");
+        property.setType(ProviderConfigProperty.LIST_TYPE);
+        List<String> options = new LinkedList<String>();
+        options.add("http");
+        options.add("https");
+        property.setOptions(options);
+        property.setHelpText("Proxy type");
         configProperties.add(property);
     }
 }
