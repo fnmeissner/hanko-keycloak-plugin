@@ -1,5 +1,6 @@
 package io.hanko.plugin.keycloak;
 
+import io.hanko.client.java.HankoClientConfig;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.ServicesLogger;
@@ -36,6 +37,23 @@ public class HankoUtils {
         }
     }
 
+    static HankoClientConfig createConfig(KeycloakSession session) throws HankoConfigurationException  {
+        String apiUrl = getApiUrl(session);
+        String apiKeyId = getApiKeyId(session);
+        String apiKeySecret = getApiKey(session);
+
+        Boolean apiHasProxy = getHasProxy(session);
+
+        if(apiHasProxy) {
+            String proxyAddress = getProxyAddress(session);
+            String proxyPort = getProxyPort(session);
+            String proxyType = getProxyType(session);
+            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret, proxyAddress, proxyPort, proxyType);
+        } else {
+            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret);
+        }
+    }
+
     static String getApiUrl(KeycloakSession session) throws HankoConfigurationException {
         return getNonEmptyConfigValue(session, CONFIG_API_URL, "API url");
     }
@@ -48,6 +66,22 @@ public class HankoUtils {
         return getNonEmptyConfigValue(session, CONFIG_APIKEYID, "API key id");
     }
 
+    static Boolean getHasProxy(KeycloakSession session) throws HankoConfigurationException {
+        return Boolean.parseBoolean(getNonEmptyConfigValue(session, CONFIG_HAS_PROXY, "API key id"));
+    }
+
+    static String getProxyAddress(KeycloakSession session) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(session, CONFIG_PROXY_ADDRESS, "API proxy address");
+    }
+
+    static String getProxyPort(KeycloakSession session) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(session, CONFIG_PROXY_PORT, "API proxy port");
+    }
+
+    static String getProxyType(KeycloakSession session) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(session, CONFIG_PROXY_TYPE, "API proxy type");
+    }
+
     static String getApiUrl(AuthenticatorConfigModel config) throws HankoConfigurationException {
         return getNonEmptyConfigValue(config, CONFIG_API_URL, "API url");
     }
@@ -55,9 +89,25 @@ public class HankoUtils {
     static String getApiKey(AuthenticatorConfigModel config) throws HankoConfigurationException {
         return getNonEmptyConfigValue(config, CONFIG_APIKEY, "API key secret");
     }
-    
+
     static String getApiKeyId(AuthenticatorConfigModel config) throws HankoConfigurationException {
         return getNonEmptyConfigValue(config, CONFIG_APIKEYID, "API key id");
+    }
+
+    static Boolean getHasProxy(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        return Boolean.parseBoolean(getNonEmptyConfigValue(config, CONFIG_HAS_PROXY, "API proxy enabled"));
+    }
+
+    static String getProxyAddress(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(config, CONFIG_PROXY_ADDRESS, "API proxy address");
+    }
+
+    static String getProxyPort(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(config, CONFIG_PROXY_PORT, "API proxy port");
+    }
+
+    static String getProxyType(AuthenticatorConfigModel config) throws HankoConfigurationException {
+        return getNonEmptyConfigValue(config, CONFIG_PROXY_TYPE, "API proxy type");
     }
 
     private static String getNonEmptyConfigValue(KeycloakSession session, String key, String description) throws HankoConfigurationException {
