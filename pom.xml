@@ -19,7 +19,7 @@
         </licenses>
 
     <properties>
-        <version.keycloak>4.4.0.Final</version.keycloak>
+        <version.keycloak>4.5.0.Final</version.keycloak>
     </properties>
 
     <repositories>

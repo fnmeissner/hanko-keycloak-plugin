@@ -17,12 +17,20 @@
                    type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
         </form>
 
+        <script src="${url.resourcesPath}/js/polyfill.min.js"></script>
+        <script src="${url.resourcesPath}/js/fetch.umd.min.js"></script>
+        <script src="${url.resourcesPath}/js/hanko.js"></script>
+
         <script>
-            const awaitLoginComplete = () => {
-                fetch('/auth/realms/${realm.name}/hanko/request/${requestId}')
-                        .then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(response => {
+            function awaitLoginComplete() {
+                fetchWithTimeout(function() { return fetch('/auth/realms/${realm.name}/hanko/request/${requestId}') })
+                        .then(function(response) { return response.json() })
+                        .catch(function(error) { 
+                            console.error('Error:', error) 
+                            setTimeout(function () {
+                                awaitLoginComplete();
+                            }, 1000);
+                        }).then(function(response) {
                             if (response.status === "PENDING") {
                                 setTimeout(function () {
                                     awaitLoginComplete();
