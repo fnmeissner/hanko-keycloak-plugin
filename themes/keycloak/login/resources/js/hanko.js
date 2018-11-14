@@ -1,4 +1,4 @@
-const fetchWithTimeout = operation => {
+function fetchWithTimeout(operation) {
   const FETCH_TIMEOUT = 5000
   let didTimeOut = false
 

@@ -7,7 +7,11 @@
 
     <title>Hanko Authentication Settings</title>
     <link rel="icon" href="${url.resourcesPath}/img/favicon.ico">
+
+    <script src="${url.resourcesPath}/js/polyfill.min.js"></script>
+    <script src="${url.resourcesPath}/js/fetch.umd.min.js"></script>
     <script src="/auth/js/keycloak.js"></script>
+
     <#if properties.styles?has_content>
         <#list properties.styles?split(' ') as style>
             <link href="${url.resourcesPath}/${style}" rel="stylesheet"/>
@@ -125,7 +129,7 @@
 
         const keycloak = Keycloak(keycloakConfig);
 
-        const runAfterRenewal = (func) => {
+        function runAfterRenewal(func) {
             keycloak.updateToken(30).then(function () {
                 func();
             }).catch(function () {
@@ -133,7 +137,7 @@
             });
         };
 
-        const updateIsHankoEnabled = () => {
+        function updateIsHankoEnabled() {
             runAfterRenewal(function () {
                 fetch(keycloak.authServerUrl + 'realms/${keycloakRealm}/hanko',
                         {
@@ -142,9 +146,8 @@
                                 "Accept": "application/json",
                                 "authorization": "Bearer " + keycloak.token,
                             }
-                        }).then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(res => {
+                        }).then(function(response) { return response.json() })
+                        .then(function(res) {
                             console.log('response: ', res);
                             if (res.isPasswordlessActive) {
                                 registerHankoDiv.style.display = 'none';
@@ -155,11 +158,11 @@
                                 deregisterHankoDiv.style.display = 'none';
                                 notLoggedInDiv.style.display = 'none';
                             }
-                        });
+                        }).catch(function(error) { console.error('Error:', error) });
             });
         };
 
-        const requestRegistration = () => {
+        function requestRegistration() {
             runAfterRenewal(function () {
 
                 fetch(keycloak.authServerUrl + 'realms/${keycloakRealm}/hanko/register',
@@ -169,9 +172,9 @@
                                 "Accept": "application/json",
                                 "authorization": "Bearer " + keycloak.token,
                             }
-                        }).then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(res => {
+                        }).then(function(response) { return response.json() })
+                        .catch(function(error) { console.error('Error:', error) })
+                        .then(function(res) {
                             console.log('response: ', res);
                             qrcode.innerHTML = "<img src=\"" + res.qrCode + "\" />";
                             awaitRegistrationComplete();
@@ -179,7 +182,7 @@
             });
         };
 
-        const awaitRegistrationComplete = () => {
+        function awaitRegistrationComplete() {
             runAfterRenewal(function () {
                 fetch(keycloak.authServerUrl + 'realms/${keycloakRealm}/hanko/register/complete',
                         {
@@ -188,9 +191,8 @@
                                 "Accept": "application/json",
                                 "authorization": "Bearer " + keycloak.token,
                             }
-                        }).then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(res => {
+                        }).then(function(response) { return response.json() })
+                        .then(function(res) {
                             console.log('response: ', res);
                             if(res.status === "PENDING") {
                                 setTimeout(function(){ awaitRegistrationComplete(); }, 500);
@@ -198,11 +200,11 @@
                                 qrcode.innerHTML = "";
                                 updateIsHankoEnabled();
                             }
-                        });
+                        }).catch(function(error) { console.error('Error:', error) });
             });
         };
 
-        const disableHanko = () => {
+        function disableHanko() {
             runAfterRenewal(function () {
                 fetch(keycloak.authServerUrl + 'realms/${keycloakRealm}/hanko/deregister',
                         {
@@ -211,18 +213,19 @@
                                 "Accept": "application/json",
                                 "authorization": "Bearer " + keycloak.token,
                             }
-                        }).then(response => response.json())
-                        .catch(error => console.error('Error:', error))
-                        .then(res => {
+                        }).then(function(response) { return response.json() })
+                        .then(function(res) {
                             console.log('response: ', res);
                             qrcode.innerHTML = "";
                             updateIsHankoEnabled();
-                        });
+                        }).catch(function(error) { console.error('Error:', error) });
             });
         };
 
-        const initKeycloak = () => {
-            keycloak.init({onLoad: 'login-required'}).then((authenticated) => {
+        function initKeycloak() {
+            const request = keycloak.init({onLoad: 'login-required'});
+            console.log(request);
+            request.then(function(authenticated) {
 
                 if (authenticated) {
                     signoutLink.style.display = 'block';
