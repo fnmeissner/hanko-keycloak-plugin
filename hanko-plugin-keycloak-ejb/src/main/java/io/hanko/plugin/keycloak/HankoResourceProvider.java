@@ -1,6 +1,7 @@
 package io.hanko.plugin.keycloak;
 
 import io.hanko.client.java.HankoClient;
+import io.hanko.client.java.HankoClientConfig;
 import io.hanko.client.java.models.ChangePassword;
 import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
@@ -87,9 +88,14 @@ public class HankoResourceProvider implements RealmResourceProvider {
                 context.getRealm(), auth.getUser(), HankoCredentialProvider.TYPE);
 
         try {
+            HankoClientConfig config = HankoUtils.createConfig(session);
+
+            boolean hasRegisteredDevices = false;
+
             String hankoUserId = userStore.getHankoUserId(currentUser());
-            boolean hasRegisteredDevices = hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiUrl(session),
-                    HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+            if(hankoUserId != null) {
+                hasRegisteredDevices = hankoClient.hasRegisteredDevices(config, hankoUserId);
+            }
 
             HankoStatus status = new HankoStatus(isConfiguredForHanko && hasRegisteredDevices);
             Response.ResponseBuilder responseBuilder = Response.ok(status);
@@ -119,12 +125,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
         String username = auth.getUser().getUsername();
 
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apiKeyId = HankoUtils.getApiKeyId(session);
+            HankoClientConfig config = HankoUtils.createConfig(session);
 
             String remoteAddress = context.getConnection().getRemoteAddr();
-            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(userIdHanko, username, apiUrl, apikey, apiKeyId, remoteAddress);
+            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(config, userIdHanko, username, remoteAddress);
 
             userStore.setHankoRequestId(currentUser(), hankoRequest.id);
 
@@ -156,10 +160,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
         }
 
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apikeyId = HankoUtils.getApiKeyId(session);
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apiUrl, apikey, apikeyId);
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, requestId);
 
             if (hankoRequest.isConfirmed()) {
                 UserCredentialModel credentials = new UserCredentialModel();
@@ -188,10 +190,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
         userStore.setHankoRequestId(currentUser(), null);
 
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apiKeyId = HankoUtils.getApiKeyId(session);
-            hankoClient.requestDeregistration(hankoUserId, username, apiUrl, apikey, apiKeyId);
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            hankoClient.requestDeregistration(config, hankoUserId, username);
         } catch (Exception ex) {
             String response = logAndFail("Could not deregister device at Hanko. " +
                     "The device will be disabled in Keycloak enyways.", ex);
@@ -270,15 +270,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
     @Produces(MediaType.APPLICATION_JSON)
     public Response waitForRequest(@PathParam("requestId") String requestId) {
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apikeyId = HankoUtils.getApiKeyId(session);
-
-            HankoRequest hankoRequest = hankoClient.awaitConfirmation(requestId, apiUrl, apikey, apikeyId);
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, requestId);
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
-
             return withCorsNoCache(responseBuilder, "POST");
-
         } catch (Exception ex) {
             String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
@@ -302,10 +297,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
         }
 
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apikeyId = HankoUtils.getApiKeyId(session);
-            HankoDevice[] devices = hankoClient.getRegisteredDevices(hankoUserId, apiUrl, apikey, apikeyId);
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoDevice[] devices = hankoClient.getRegisteredDevices(config, hankoUserId);
 
             Response.ResponseBuilder responseBuilder = Response.ok(devices);
             return withCorsNoCache(responseBuilder, "POST");
@@ -331,10 +324,8 @@ public class HankoResourceProvider implements RealmResourceProvider {
         }
 
         try {
-            String apiUrl = HankoUtils.getApiUrl(session);
-            String apikey = HankoUtils.getApiKey(session);
-            String apikeyId = HankoUtils.getApiKeyId(session);
-            HankoRequest request = hankoClient.deleteDevice(hankoUserId, username, deviceId, apiUrl, apikey, apikeyId);
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoRequest request = hankoClient.deleteDevice(config, hankoUserId, username, deviceId);
 
             Response.ResponseBuilder responseBuilder = Response.ok(request);
             return withCorsNoCache(responseBuilder, "DELETE");

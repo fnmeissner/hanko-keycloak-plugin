@@ -18,6 +18,7 @@
 package io.hanko.plugin.keycloak;
 
 import io.hanko.client.java.HankoClient;
+import io.hanko.client.java.HankoClientConfig;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
@@ -130,15 +131,16 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
     public boolean validatePassword(AuthenticationFlowContext context, UserModel user, MultivaluedMap<String, String> inputData) {
 
         boolean isHankoEnabled = false;
+        KeycloakSession session = context.getSession();
 
         try {
-            KeycloakSession session = context.getSession();
+            HankoClientConfig config = HankoUtils.createConfig(session);
             String hankoUserId = userStore.getHankoUserId(user);
 
             isHankoEnabled =
                     context.getSession().userCredentialManager().isConfiguredFor(context.getRealm(), user, HankoCredentialProvider.TYPE) &&
                             hankoUserId != null &&
-                            hankoClient.hasRegisteredDevices(hankoUserId, HankoUtils.getApiUrl(session), HankoUtils.getApiKey(session), HankoUtils.getApiKeyId(session));
+                            hankoClient.hasRegisteredDevices(config, hankoUserId);
         } catch (Exception ex) {
             log.error("Could not determine Hanko Registration status", ex);
         }

@@ -17,7 +17,7 @@ public class HankoClientConfig {
         this.apiKeySecret = apiKeySecret;
         this.isProxyEnabled = true;
         this.proxyAddress = proxyAddress;
-        this.proxyPort = proxyPort;
+        this.proxyPort = Integer.parseInt(proxyPort);
         this.proxyType = proxyType;
     }
 
@@ -41,7 +41,7 @@ public class HankoClientConfig {
         return proxyAddress;
     }
 
-    public String getProxyPort() {
+    public Integer getProxyPort() {
         return proxyPort;
     }
 
@@ -54,7 +54,7 @@ public class HankoClientConfig {
     private String apiKeySecret;
     private Boolean isProxyEnabled;
     private String proxyAddress;
-    private String proxyPort;
+    private Integer proxyPort;
     private String proxyType;
 
 }
