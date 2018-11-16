@@ -67,7 +67,7 @@ public class HankoUtils {
     }
 
     static Boolean getHasProxy(KeycloakSession session) throws HankoConfigurationException {
-        String value = getNullableConfigValue(session, CONFIG_HAS_PROXY, "API key id");
+        String value = getNullableConfigValue(session, CONFIG_HAS_PROXY, "Has Proxy");
         if(value == null) {
             value = "false";
         }
@@ -131,7 +131,7 @@ public class HankoUtils {
 
         for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
             if (config.getConfig().containsKey(key)) {
-                return getNonEmptyConfigValue(config, key, description);
+                return getNullableConfigValue(config, key, description);
             }
         }
 
@@ -144,6 +144,10 @@ public class HankoUtils {
             throwHankoConfigException(key, description);
         }
         return value;
+    }
+
+    private static String getNullableConfigValue(AuthenticatorConfigModel config, String key, String description) throws HankoConfigurationException {
+        return config.getConfig().get(key);
     }
 
     private static String throwHankoConfigException(String key, String description) throws HankoConfigurationException {
