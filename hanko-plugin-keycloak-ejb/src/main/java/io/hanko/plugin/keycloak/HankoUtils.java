@@ -67,7 +67,11 @@ public class HankoUtils {
     }
 
     static Boolean getHasProxy(KeycloakSession session) throws HankoConfigurationException {
-        return Boolean.parseBoolean(getNonEmptyConfigValue(session, CONFIG_HAS_PROXY, "API key id"));
+        String value = getNullableConfigValue(session, CONFIG_HAS_PROXY, "API key id");
+        if(value == null) {
+            value = "false";
+        }
+        return Boolean.parseBoolean(value);
     }
 
     static String getProxyAddress(KeycloakSession session) throws HankoConfigurationException {
@@ -120,6 +124,18 @@ public class HankoUtils {
         }
 
         return throwHankoConfigException(key, description);
+    }
+
+    private static String getNullableConfigValue(KeycloakSession session, String key, String description) throws HankoConfigurationException {
+        verifySession(session);
+
+        for (AuthenticatorConfigModel config : session.getContext().getRealm().getAuthenticatorConfigs()) {
+            if (config.getConfig().containsKey(key)) {
+                return getNonEmptyConfigValue(config, key, description);
+            }
+        }
+
+        return null;
     }
 
     private static String getNonEmptyConfigValue(AuthenticatorConfigModel config, String key, String description) throws HankoConfigurationException {
