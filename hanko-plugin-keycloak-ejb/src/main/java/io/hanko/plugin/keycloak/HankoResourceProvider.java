@@ -288,17 +288,13 @@ public class HankoResourceProvider implements RealmResourceProvider {
         ensureIsAuthenticatedUser();
 
         String hankoUserId = userStore.getHankoUserId(currentUser());
-        String requestId = userStore.getHankoRequestId(currentUser());
-
-        AccessToken token = auth.getToken();
-
-        if (hankoUserId == null) {
-            return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "POST");
-        }
 
         try {
             HankoClientConfig config = HankoUtils.createConfig(session);
-            HankoDevice[] devices = hankoClient.getRegisteredDevices(config, hankoUserId);
+            HankoDevice[] devices = new HankoDevice[]{};
+            if(hankoUserId != null) {
+                hankoClient.getRegisteredDevices(config, hankoUserId);
+            }
 
             Response.ResponseBuilder responseBuilder = Response.ok(devices);
             return withCorsNoCache(responseBuilder, "POST");
