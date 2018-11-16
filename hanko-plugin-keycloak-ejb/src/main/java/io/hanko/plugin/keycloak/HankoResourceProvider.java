@@ -293,7 +293,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoDevice[] devices = new HankoDevice[]{};
             if(hankoUserId != null) {
-                hankoClient.getRegisteredDevices(config, hankoUserId);
+                devices = hankoClient.getRegisteredDevices(config, hankoUserId);
             }
 
             Response.ResponseBuilder responseBuilder = Response.ok(devices);
