@@ -65,21 +65,10 @@ label {
   line-height: 20px;
 }
 
-#kc-logo-wrapper {
-  background-image: url(../img/hanko-logo_white.png);
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 140px;
-  width: 300px;
-  margin: 62px auto 0;
-}
-
 div.kc-logo-text {
   background-image: url(../img/hanko-logo_white.png);
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 140px;
-  width: 300px;
+  height: 123px;
+  width: 350px;
   margin: 40px 0;
 }
 
