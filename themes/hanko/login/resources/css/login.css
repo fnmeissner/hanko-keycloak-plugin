@@ -76,6 +76,11 @@ label {
   line-height: 20px;
 }
 
+.checkbox label {
+  margin: 0;
+  display: flex;
+}
+
 @media only screen and (min-height: 820px) {
   div.kc-logo-text {
     background-image: url(../img/hanko-logo_white.png);
