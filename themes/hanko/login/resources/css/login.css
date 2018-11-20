@@ -67,8 +67,9 @@ label {
 
 div.kc-logo-text {
   background-image: url(../img/hanko-logo_white.png);
-  height: 123px;
-  width: 350px;
+  background-size: cover;
+  height: 105px;
+  width: 300px;
   margin: 40px 0;
 }
 
