@@ -27,7 +27,7 @@ body {
   font-family: Montserrat, Arial, sans-serif;
   background-size: 100%, 170px;
   color: rgb(51, 51, 51);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .login-pf-page {
@@ -63,7 +63,7 @@ body {
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .login-pf-page .form-control {
@@ -73,7 +73,6 @@ body {
 label {
   margin-bottom: 5px;
   font-weight: 600;
-  font-size: 12px;
   line-height: 20px;
 }
 
@@ -96,7 +95,6 @@ div.kc-logo-text span {
   background-color: #ea5953;
   color: #fafafa;
   border-radius: 3px;
-  font-size: 16px;
   font-weight: 700;
   padding: 7px;
   cursor: pointer;
@@ -111,7 +109,6 @@ div.kc-logo-text span {
   border-width: 1px;
   padding: 11px;
   border-style: solid;
-  font-size: 12px;
   line-height: 20px;
 }
 
@@ -134,7 +131,7 @@ div.kc-logo-text span {
 
 input {
   font-family: 'Montserrat';
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
 
   font-size: 100%;
@@ -152,7 +149,6 @@ input {
 
 .form-control {
   padding: 2px 6px;
-  font-size: 12px;
   line-height: 1.66666667;
 }
 
@@ -173,7 +169,6 @@ input[type='checkbox'] {
 a {
   color: #363636;
   font-weight: 500;
-  font-size: 14px;
   text-decoration: none;
 }
 
