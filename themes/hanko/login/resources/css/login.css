@@ -103,6 +103,7 @@ div.kc-logo-text span {
   width: 100%;
   -webkit-font-smoothing: antialiased;
   height: 42px;
+  -webkit-appearance: none;
 }
 
 .alert {
