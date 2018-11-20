@@ -39,8 +39,20 @@ body {
 .login-pf-page .card-pf {
   padding: 20px 40px 30px 40px;
   background: #fff;
-  width: 500px;
+
   border-radius: 4px;
+}
+
+@media only screen and (min-width: 501px) {
+  .login-pf-page .card-pf {
+    width: 500px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .login-pf-page .card-pf {
+    width: 100%;
+  }
 }
 
 .login-pf-page .login-pf-header h1,
@@ -65,12 +77,14 @@ label {
   line-height: 20px;
 }
 
-div.kc-logo-text {
-  background-image: url(../img/hanko-logo_white.png);
-  background-size: cover;
-  height: 105px;
-  width: 300px;
-  margin: 40px 0;
+@media only screen and (min-height: 820px) {
+  div.kc-logo-text {
+    background-image: url(../img/hanko-logo_white.png);
+    background-size: cover;
+    height: 105px;
+    width: 300px;
+    margin: 40px 0;
+  }
 }
 
 div.kc-logo-text span {
