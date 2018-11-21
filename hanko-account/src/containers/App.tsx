@@ -4,6 +4,7 @@ import { AddHankoAuthenticator } from '../components/AddHankoAuthenticator'
 import { fetchApi } from '../utils/fetchApi'
 import { deviceFromJson, Device } from '../models/Device'
 import { ChangePasswordComponent } from '../components/ChangePasswordComponent'
+import glamorous from 'glamorous'
 
 type AppState = {
   showAddHankoAuthenticator: boolean
@@ -13,6 +14,13 @@ type AppState = {
 type AppProps = {
   keycloak: Keycloak.KeycloakInstance
 }
+
+const ContentWrapper = glamorous.div({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  flex: 1
+})
 
 export class App extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
@@ -54,8 +62,20 @@ export class App extends React.Component<AppProps, AppState> {
     const { keycloak } = this.props
     const { showAddHankoAuthenticator, devices } = this.state
 
+    const urlParams = new URLSearchParams(window.location.search)
+    const redirectParam = urlParams.get('redirectUrl')
+    const redirectNameParam = urlParams.get('redirectName')
+    const redirectLinkText = redirectNameParam ? redirectNameParam : 'return'
+
     return (
-      <div>
+      <ContentWrapper>
+        <div className="navigation-bar">
+          {redirectParam ? (
+            <a className="navigation-bar-link" href={redirectParam}>
+              {redirectLinkText}
+            </a>
+          ) : null}
+        </div>
         <div id="content">
           <div className="center column">
             <div className="container">
@@ -89,7 +109,7 @@ export class App extends React.Component<AppProps, AppState> {
             <ChangePasswordComponent keycloak={keycloak} />
           </div>
         </div>
-      </div>
+      </ContentWrapper>
     )
   }
 }

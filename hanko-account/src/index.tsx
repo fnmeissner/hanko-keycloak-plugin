@@ -8,13 +8,21 @@ import { NotLoggedIn } from './containers/NotLoggedIn'
 
 require('./styles/main.scss')
 
-const keycloakUrl = (window as any).keycloakUrl
-  ? (window as any).keycloakUrl
-  : `${process.env.KEYCLOAK_URL}/auth`
+const keycloakUrl =
+  (window as any).keycloakUrl !== undefined
+    ? (window as any).keycloakUrl
+    : `${process.env.KEYCLOAK_URL}/auth`
 
-const realm = (window as any).realmId
-  ? (window as any).realmId
-  : `${process.env.KEYCLOAK_REALM}`
+const realm =
+  (window as any).realmId !== undefined
+    ? (window as any).realmId
+    : `${process.env.KEYCLOAK_REALM}`
+
+console.log('(window as any).realmId = ' + (window as any).realmId)
+console.log('(window as any).keycloakUrl = ' + (window as any).keycloakUrl)
+
+console.log('${process.env.KEYCLOAK_URL} = ' + process.env.KEYCLOAK_URL)
+console.log('${process.env.KEYCLOAK_REALM} = ' + process.env.KEYCLOAK_REALM)
 
 const keycloak = Keycloak({
   url: keycloakUrl,

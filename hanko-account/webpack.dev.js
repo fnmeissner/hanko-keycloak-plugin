@@ -5,13 +5,12 @@ const Dotenv = require('dotenv-webpack')
 const HtmlPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
-  mode: 'production',
+  mode: 'development',
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback: true
   },
   devtool: 'inline-source-map',
-  mode: 'development',
   plugins: [
     new Dotenv({ path: path.join(__dirname, '.env.local') }),
     new HtmlPlugin({

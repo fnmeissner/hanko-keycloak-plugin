@@ -11,6 +11,7 @@ $background-color: #333;
 $container-color: rgb(33, 33, 33);
 
 %font-default {
+  font-family: Montserrat, Arial, sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 21px;
@@ -22,6 +23,13 @@ $container-color: rgb(33, 33, 33);
   font-weight: 700;
   font-size: 12px;
   line-height: 16px;
+}
+
+%font-link {
+  @extend %font-default;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 19px;
 }
 
 %font-header {
@@ -143,4 +151,22 @@ label {
 h1 {
   @extend %font-header;
   margin-bottom: 25px;
+}
+
+.navigation-bar {
+  display: flex;
+  background-color: #212121;
+  height: 70px;
+  padding-left: 31px;
+  padding-right: 31px;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navigation-bar-link {
+  @extend %font-link;
+  color: white;
+  text-decoration: none;
 }
