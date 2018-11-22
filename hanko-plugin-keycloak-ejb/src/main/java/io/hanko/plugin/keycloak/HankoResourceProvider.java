@@ -9,6 +9,7 @@ import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
+import io.hanko.plugin.keycloak.serialization.WebAuthnResponse;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
@@ -112,7 +113,21 @@ public class HankoResourceProvider implements RealmResourceProvider {
     @Path("register")
     @Produces(MediaType.APPLICATION_JSON)
     public Response post() {
+       return post("uaf");
+    }
+
+    @POST
+    @Path("registerType/{type}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response post(@PathParam("type") String fidoTypeString) {
         ensureIsAuthenticatedUser();
+
+        HankoClient.FidoType fidoType = HankoClient.FidoType.UAF;
+        try {
+            fidoType = HankoClient.FidoType.valueOf(fidoTypeString);
+        } catch (Exception ex) {
+            logger.warn("no fido type declared, using UAF as fallback", ex);
+        }
 
         String userIdHanko = userStore.getHankoUserId(currentUser());
         if (userIdHanko == null) {
@@ -128,17 +143,43 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
 
             String remoteAddress = context.getConnection().getRemoteAddr();
-            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(config, userIdHanko, username, remoteAddress);
+            HankoRegistrationRequest hankoRequest = hankoClient.requestRegistration(config, userIdHanko, username, remoteAddress, fidoType);
 
             userStore.setHankoRequestId(currentUser(), hankoRequest.id);
 
             String qrCode = hankoRequest.getQrCodeLink();
-            HankoRegistrationChallenge hankoRegistrationChallenge = new HankoRegistrationChallenge(qrCode);
+            HankoRegistrationChallenge hankoRegistrationChallenge = new HankoRegistrationChallenge(hankoRequest.id, qrCode, hankoRequest.request);
 
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRegistrationChallenge);
             return withCorsNoCache(responseBuilder, "POST");
         } catch (Exception ex) {
             String response = logAndFail("Could not request Hanko registration.", ex);
+            Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
+            return withCorsNoCache(responseBuilder, "POST");
+        }
+    }
+
+    @POST
+    @Path("request/verify/webauthn")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response registerVerify(WebAuthnResponse webAuthnResponse) {
+        ensureIsAuthenticatedUser();
+
+        String hankoUserId = userStore.getHankoUserId(currentUser());
+        String requestId = userStore.getHankoRequestId(currentUser());
+
+        if (hankoUserId == null) {
+            return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "POST");
+        }
+
+        try {
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoRequest hankoRequest = hankoClient.validateWebAuthn(config, requestId, webAuthnResponse);
+            Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
+            return withCorsNoCache(responseBuilder, "POST");
+        } catch (Exception ex) {
+            String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
             return withCorsNoCache(responseBuilder, "POST");
         }
@@ -152,8 +193,6 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
         String hankoUserId = userStore.getHankoUserId(currentUser());
         String requestId = userStore.getHankoRequestId(currentUser());
-
-        AccessToken token = auth.getToken();
 
         if (hankoUserId == null) {
             return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "POST");

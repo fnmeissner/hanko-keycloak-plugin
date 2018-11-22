@@ -29,27 +29,38 @@ public class HankoHttpClientApache implements HankoHttpClient {
         this.config = config;
     }
 
-    @Override
-    public InputStream post(String url, String json) {
-        // create request
-        HttpPost httpPost = new HttpPost(baseUrl + url);
-        httpPost.setHeader("Content-Type", "application/json");
+    public InputStream send(String url, String json, HttpEntityEnclosingRequestBase request) {
+        request.setHeader("Content-Type", "application/json");
 
-        setupProxy(httpPost);
+        setupProxy(request);
 
         // add json body
         try {
             StringEntity entity = new StringEntity(json);
-            httpPost.setEntity(entity);
-            String path = httpPost.getURI().getPath();
-            String method = httpPost.getMethod();
+            request.setEntity(entity);
+            String path = request.getURI().getPath();
+            String method = request.getMethod();
             String authHeader = hmacUtil.makeAuthorizationHeader(config.getApiKeySecret(), config.getApiKeyId(), method, path, json);
-            httpPost.addHeader("Authorization", authHeader);
+            request.addHeader("Authorization", authHeader);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
 
-        return executeRequest(httpPost);
+        return executeRequest(request);
+    }
+
+    @Override
+    public InputStream post(String url, String json) {
+        // create request
+        HttpPost httpPost = new HttpPost(baseUrl + url);
+        return send(url, json, httpPost);
+    }
+
+    @Override
+    public InputStream put(String url, String json) {
+        // create request
+        HttpPut httpPut = new HttpPut(baseUrl + url);
+        return send(url, json, httpPut);
     }
 
     @Override

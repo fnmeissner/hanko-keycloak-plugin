@@ -22,4 +22,13 @@ public class HankoJsonParserJackson implements HankoJsonParser {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public <T> String serialize(T value) {
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }

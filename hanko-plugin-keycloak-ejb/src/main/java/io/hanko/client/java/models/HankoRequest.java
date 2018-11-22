@@ -10,6 +10,7 @@ public class HankoRequest {
     public String username;
     public String status;
     public ClientData clientData;
+    public String request;
     public String transaction;
     public List<LinkRelation> links;
 
