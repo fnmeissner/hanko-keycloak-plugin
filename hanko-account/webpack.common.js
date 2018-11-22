@@ -1,8 +1,9 @@
 const path = require('path')
+const HtmlPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
-  entry: ['./src/index.tsx'],
+  entry: ['@babel/polyfill', 'whatwg-fetch', './src/index.tsx'],
   module: {
     rules: [
       {
