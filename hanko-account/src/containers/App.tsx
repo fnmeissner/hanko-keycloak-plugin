@@ -5,6 +5,7 @@ import { fetchApi } from '../utils/fetchApi'
 import { deviceFromJson, Device } from '../models/Device'
 import { ChangePasswordComponent } from '../components/ChangePasswordComponent'
 import glamorous from 'glamorous'
+import { AddWebAuthn } from '../components/AddWebAuthn'
 
 const navigationArrow = require('../images/ic_arrow_right.svg') as string
 
@@ -60,30 +61,6 @@ export class App extends React.Component<AppProps, AppState> {
     })
   }
 
-  convertToBinary = (dataURI: string) => {
-    var raw = window.atob(dataURI)
-    var rawLength = raw.length
-    var array = new Uint8Array(new ArrayBuffer(rawLength))
-
-    for (let i = 0; i < rawLength; i++) {
-      array[i] = raw.charCodeAt(i)
-    }
-    return array
-  }
-
-  arrayBufferToBase64 = (buf: ArrayBuffer) => {
-    var binary = ''
-    var bytes = new Uint8Array(buf)
-    var len = bytes.byteLength
-    for (var i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i])
-    }
-    return window
-      .btoa(binary)
-      .replace(/\//g, '_')
-      .replace(/\+/g, '-')
-  }
-
   b64DecodeUnicode = (str: string) => {
     return decodeURIComponent(
       Array.prototype.map
@@ -98,91 +75,6 @@ export class App extends React.Component<AppProps, AppState> {
     var base64Url = token.split('.')[1]
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
     return JSON.parse(this.b64DecodeUnicode(base64))
-  }
-
-  addThisDevice = () => {
-    const { keycloak } = this.props
-
-    // fetch request
-    fetchApi(keycloak, '/hanko/registerType/WEB_AUTHN', 'POST').then(
-      registrationRequest => {
-        console.log(registrationRequest)
-        const fidoRequest = JSON.parse(registrationRequest.request)
-        console.log(fidoRequest)
-        const challenge = this.convertToBinary(fidoRequest.challenge)
-
-        const pubKey = {
-          pubKeyCredParams: [
-            {
-              alg: -7,
-              type: 'public-key'
-            },
-            {
-              alg: -257,
-              type: 'public-key'
-            }
-          ],
-          rp: {
-            name: fidoRequest.rpName
-          },
-          user: {
-            id: challenge,
-            name: fidoRequest.displayName,
-            displayName: fidoRequest.displayName
-          },
-          authenticatorSelection: {
-            requireResidentKey: false,
-            userVerification: 'preferred',
-            authenticatorAttachment: 'cross-platform'
-          },
-          timeout: 50000,
-          challenge: challenge,
-          excludeCredentials: [],
-          attestation: 'none'
-        }
-
-        const s = navigator as any
-        console.log(pubKey)
-        s.credentials
-          .create({ publicKey: pubKey })
-          .then((result: any) => {
-            console.log('Creating credential yielded following result:')
-            console.log(result)
-            const attestationString = this.arrayBufferToBase64(
-              result.response.attestationObject
-            )
-
-            const clientDataString = this.arrayBufferToBase64(
-              result.response.clientDataJSON
-            )
-
-            var response = {
-              credID: result.id.replace(/\//g, '_').replace(/\+/g, '-'),
-              publicKey: attestationString,
-              challenge: fidoRequest.challenge,
-              clientData: clientDataString
-            }
-
-            console.log('response')
-            console.log(response)
-
-            fetchApi(
-              keycloak,
-              '/hanko/request/verify/webauthn',
-              'POST',
-              response
-            ).then(result => {
-              console.log(result)
-            })
-          })
-          .catch((reason: any) => {
-            console.log(reason)
-          })
-      }
-    )
-
-    // call webauthn
-    // send response
   }
 
   render() {
@@ -259,9 +151,20 @@ export class App extends React.Component<AppProps, AppState> {
                   <button onClick={this.showAddHankoAuthenticator}>
                     Add Authenticator
                   </button>
-                  {/* <button onClick={this.addThisDevice}>
+                  <AddWebAuthn
+                    refetch={this.fetchDevices}
+                    keycloak={keycloak}
+                    type="roaming"
+                  >
                     Add roaming Device
-                  </button> */}
+                  </AddWebAuthn>
+                  <AddWebAuthn
+                    refetch={this.fetchDevices}
+                    keycloak={keycloak}
+                    type="platform"
+                  >
+                    Add this Device
+                  </AddWebAuthn>
                 </div>
               )}
             </div>
