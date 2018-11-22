@@ -2,7 +2,7 @@ const path = require('path')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
-  entry: ['babel-polyfill', 'whatwg-fetch', './src/index.tsx'],
+  entry: ['./src/index.tsx'],
   module: {
     rules: [
       {
