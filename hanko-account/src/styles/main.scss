@@ -52,7 +52,8 @@ div#root {
 
 div#content {
   @extend %font-default;
-  width: 1400px;
+  max-width: 1400px;
+  width: 100%;
   padding: 50px;
   display: flex;
   flex-direction: column;
