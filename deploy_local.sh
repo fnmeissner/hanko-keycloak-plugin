@@ -7,3 +7,4 @@ vagrant scp themes/keycloak/login/resources/img/login-hanko.png :/opt/keycloak-4
 vagrant scp themes/base/account/account-hanko.ftl :/opt/keycloak-4.5.0.Final/themes/base/account/account-hanko.ftl
 vagrant scp themes/keycloak/login/resources/js :/opt/keycloak-4.5.0.Final/themes/keycloak/login/resources
 vagrant scp themes/keycloak/account/resources/js :/opt/keycloak-4.5.0.Final/themes/keycloak/account/resources
+vagrant scp themes/hanko :/opt/keycloak-4.5.0.Final/themes

@@ -23,7 +23,8 @@ module.exports = merge(common, {
       minify: {
         collapseWhitespace: true
       },
-      template: 'public/index.ftl'
+      template: 'public/index.ftl',
+      favicon: 'public/favicon.ico'
     })
   ]
 })

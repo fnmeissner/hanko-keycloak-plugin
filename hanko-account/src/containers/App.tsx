@@ -82,6 +82,22 @@ export class App extends React.Component<AppProps, AppState> {
       .replace(/\+/g, '-')
   }
 
+  b64DecodeUnicode = (str: string) => {
+    return decodeURIComponent(
+      Array.prototype.map
+        .call(atob(str), (c: any) => {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        })
+        .join('')
+    )
+  }
+
+  parseJwt = (token: String) => {
+    var base64Url = token.split('.')[1]
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(this.b64DecodeUnicode(base64))
+  }
+
   addThisDevice = () => {
     const { keycloak } = this.props
 
@@ -169,6 +185,13 @@ export class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { keycloak } = this.props
+
+    const token = keycloak.token
+    const jwt = token ? this.parseJwt(token) : {}
+    console.log(jwt)
+    const username = jwt.name ? jwt.name : ''
+    const email = jwt.email ? jwt.email : ''
+
     const { showAddHankoAuthenticator, devices } = this.state
 
     const urlParams = new URLSearchParams(window.location.search)
@@ -197,6 +220,17 @@ export class App extends React.Component<AppProps, AppState> {
         </div>
         <div id="content">
           <div className="center column">
+            <div className="container">
+              <h1>My Account</h1>
+              <div className="formfield">
+                <label>Name</label>
+                <span>{username}</span>
+              </div>
+              <div className="formfield">
+                <label>E-Mail</label>
+                <span>{email}</span>
+              </div>
+            </div>
             <div className="container">
               <h1>Registered Devices</h1>
               {devices === undefined ? (

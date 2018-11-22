@@ -14,7 +14,8 @@ module.exports = merge(common, {
   plugins: [
     new Dotenv({ path: path.join(__dirname, '.env.local') }),
     new HtmlPlugin({
-      template: 'public/index.html'
+      template: 'public/index.html',
+      favicon: 'public/favicon.ico'
     })
   ]
 })

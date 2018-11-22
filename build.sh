@@ -14,7 +14,7 @@ echo Remove old javascript files
 rm themes/keycloak/account/resources/js/*
 
 echo Copy new javascript files
-cp hanko-account/dist/*.js themes/keycloak/account/resources/js/
+cp hanko-account/dist/* themes/keycloak/account/resources/js/
 
 echo Delete old themes.zip
 rm themes.zip
