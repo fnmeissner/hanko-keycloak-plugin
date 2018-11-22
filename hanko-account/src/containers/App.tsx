@@ -6,6 +6,8 @@ import { deviceFromJson, Device } from '../models/Device'
 import { ChangePasswordComponent } from '../components/ChangePasswordComponent'
 import glamorous from 'glamorous'
 
+const navigationArrow = require('../images/ic_arrow_right.svg') as string
+
 type AppState = {
   showAddHankoAuthenticator: boolean
   devices: Device[] | undefined
@@ -214,6 +216,7 @@ export class App extends React.Component<AppProps, AppState> {
           </div>
           {redirectParam ? (
             <a className="navigation-bar-link" href={redirectParam}>
+              <img className="back-arrow" src={navigationArrow} />
               {redirectLinkText}
             </a>
           ) : null}
