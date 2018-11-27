@@ -29,6 +29,8 @@
                     <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
                 </div>
                 <input type="hidden" name="loginMethod" value="PASSWORD" />
+                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
+                       type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
             </form>
             <#include "hanko-multi-login-links.ftl">
         <#elseif loginMethod = "UAF">
@@ -72,6 +74,9 @@
             </script>
         <#elseif loginMethod = "WEBAUTHN">
             <p>Please confirm your authentication with WebAuthn.</p>
+
+            <img src="${url.resourcesPath}/img/windows-hello.jpg" style="display: block; margin: 0px auto">
+
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
                   method="post">
