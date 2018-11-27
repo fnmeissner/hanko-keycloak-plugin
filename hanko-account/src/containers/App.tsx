@@ -152,7 +152,7 @@ export class App extends React.Component<AppProps, AppState> {
               ) : (
                 <div className="button-list">
                   <button onClick={this.showAddHankoAuthenticator}>
-                    Add Authenticator
+                    Add Hanko Authenticator
                   </button>
                   <AddWebAuthn
                     refetch={this.fetchDevices}
