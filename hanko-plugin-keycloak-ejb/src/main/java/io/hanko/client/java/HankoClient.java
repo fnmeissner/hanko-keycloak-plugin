@@ -14,7 +14,7 @@ import java.io.InputStream;
 
 public class HankoClient {
 
-    public enum FidoType { UAF, U2F, WEB_AUTHN }
+    public enum FidoType {FIDO_UAF, U2F, WEBAUTHN}
 
     private HankoHttpClientFactory httpClientFactory;
     private HankoJsonParser jsonParser;
@@ -26,11 +26,15 @@ public class HankoClient {
     }
 
     private String getUrlRepresentation(FidoType fidoType) {
-        switch(fidoType) {
-            case U2F: return "u2f";
-            case UAF: return "uaf";
-            case WEB_AUTHN: return "webauthn";
-            default: throw new RuntimeException("Invalid FIDO Type");
+        switch (fidoType) {
+            case U2F:
+                return "u2f";
+            case FIDO_UAF:
+                return "uaf";
+            case WEBAUTHN:
+                return "webauthn";
+            default:
+                throw new RuntimeException("Invalid FIDO Type");
         }
     }
 
@@ -55,10 +59,7 @@ public class HankoClient {
     }
 
     public Boolean hasRegisteredDevices(HankoClientConfig config, String userId) {
-        HankoHttpClient httpClient = httpClientFactory.create(config);
-        InputStream is = httpClient.get("/mgmt/v1/registrations/" + userId);
-        HankoDevice[] devices = jsonParser.parse(is, HankoDevice[].class);
-        return devices.length > 0;
+        return getRegisteredDevices(config, userId).length > 0;
     }
 
 
@@ -69,20 +70,25 @@ public class HankoClient {
         return devices;
     }
 
-    public HankoRequest deleteDevice(HankoClientConfig config, String userId, String username, String deviceId) {
+    public HankoRequest deleteDevice(HankoClientConfig config, String userId, String username, String deviceId, FidoType fidoType) {
         HankoHttpClient httpClient = httpClientFactory.create(config);
         String json = "{\"operation\":\"DEREG\",\"username\":\"" + username + "\",\"userId\":\"" + userId + "\",\"deviceIds\":[\"" + deviceId + "\"]}";
-        log.error("sending json: " + json);
-        InputStream is = httpClient.post("/v1/uaf/requests", json);
-        HankoRegistrationRequest hankoRequest = jsonParser.parse(is, HankoRegistrationRequest.class);
+        String urlRepresentation = getUrlRepresentation(fidoType);
+        InputStream is = httpClient.post("/v1/" + urlRepresentation + "/requests", json);
+        HankoRequest hankoRequest = jsonParser.parse(is, HankoRequest.class);
         httpClient.close();
         return hankoRequest;
     }
 
     public HankoRequest validateWebAuthn(HankoClientConfig config, String id, WebAuthnResponse webAuthnResponse) {
-        HankoHttpClient httpClient = httpClientFactory.create(config);
         String response = jsonParser.serialize(webAuthnResponse);
-        String json = "{\"webAuthnResponse\":" + response + ", \"deviceKeyInfo\":{\"keyName\":\"WebAuthn\"}}";
+        return validateWebAuthn(config, id, response);
+    }
+
+    public HankoRequest validateWebAuthn(HankoClientConfig config, String id, String webAuthnResponse) {
+        HankoHttpClient httpClient = httpClientFactory.create(config);
+
+        String json = "{\"webAuthnResponse\":" + webAuthnResponse + ", \"deviceKeyInfo\":{\"keyName\":\"WebAuthn\"}}";
         log.warn(json);
         InputStream is = httpClient.put("/v1/webauthn/requests/" + id, json);
         HankoRequest hankoRequest = jsonParser.parse(is, HankoRequest.class);
@@ -90,11 +96,12 @@ public class HankoClient {
         return hankoRequest;
     }
 
-    public HankoRequest requestAuthentication(HankoClientConfig config, String userId, String username, String remoteAddress) {
+    public HankoRequest requestAuthentication(HankoClientConfig config, String userId, String username, String remoteAddress, FidoType fidoType) {
         HankoHttpClient httpClient = httpClientFactory.create(config);
         String json = "{\"operation\":\"AUTH\",\"username\":\"" + username + "\",\"userId\":\"" + userId + "\"," +
                 "\"clientData\":{\"remoteAddress\":\"" + remoteAddress + "\"}}";
-        InputStream is = httpClient.post("/v1/uaf/requests", json);
+        String urlRepresentation = getUrlRepresentation(fidoType);
+        InputStream is = httpClient.post("/v1/" + urlRepresentation + "/requests", json);
         HankoRequest hankoRequest = jsonParser.parse(is, HankoRequest.class);
         httpClient.close();
         return hankoRequest;

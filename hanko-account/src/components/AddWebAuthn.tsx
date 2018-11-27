@@ -37,7 +37,7 @@ export class AddWebAuthn extends React.Component<
           }
 
     // fetch request
-    fetchApi(keycloak, '/hanko/registerType/WEB_AUTHN', 'POST').then(
+    fetchApi(keycloak, '/hanko/registerType/WEBAUTHN', 'POST').then(
       registrationRequest => {
         console.log(registrationRequest)
         const fidoRequest = JSON.parse(registrationRequest.request)
@@ -115,7 +115,6 @@ export class AddWebAuthn extends React.Component<
 
   render() {
     const { children } = this.props
-
     return <button onClick={this.addThisDevice}>{children}</button>
   }
 }

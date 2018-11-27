@@ -94,6 +94,9 @@ export class App extends React.Component<AppProps, AppState> {
     const redirectLinkText = redirectNameParam ? redirectNameParam : 'return'
     const logo = require('../images/logo.png') as string
 
+    // const publicKeyCredential = (window as any).PublicKeyCredential
+    // const isPlatformAuthenticatorAvailable = publicKeyCredential ? publicKeyCredential.
+
     return (
       <ContentWrapper>
         <div className="navigation-bar">

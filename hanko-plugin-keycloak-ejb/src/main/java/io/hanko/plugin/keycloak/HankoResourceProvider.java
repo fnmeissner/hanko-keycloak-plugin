@@ -122,7 +122,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
     public Response post(@PathParam("type") String fidoTypeString) {
         ensureIsAuthenticatedUser();
 
-        HankoClient.FidoType fidoType = HankoClient.FidoType.UAF;
+        HankoClient.FidoType fidoType = HankoClient.FidoType.FIDO_UAF;
         try {
             fidoType = HankoClient.FidoType.valueOf(fidoTypeString);
         } catch (Exception ex) {
@@ -344,15 +344,13 @@ public class HankoResourceProvider implements RealmResourceProvider {
     }
 
     @DELETE
-    @Path("devices/{deviceId}")
+    @Path("devices/{fidoTypeString}/{deviceId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteDevice(@PathParam("deviceId") String deviceId) {
+    public Response deleteDevice(@PathParam("fidoTypeString") String fidoTypeString, @PathParam("deviceId") String deviceId) {
         ensureIsAuthenticatedUser();
 
         String hankoUserId = userStore.getHankoUserId(currentUser());
         String username = auth.getUser().getUsername();
-
-        AccessToken token = auth.getToken();
 
         if (hankoUserId == null) {
             return withError("HANKO User ID is null.", Response.Status.INTERNAL_SERVER_ERROR, "DELETE");
@@ -360,7 +358,10 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
         try {
             HankoClientConfig config = HankoUtils.createConfig(session);
-            HankoRequest request = hankoClient.deleteDevice(config, hankoUserId, username, deviceId);
+            HankoClient.FidoType fidoType = HankoClient.FidoType.valueOf(fidoTypeString);
+            logger.error("deleting device");
+            HankoRequest request = hankoClient.deleteDevice(config, hankoUserId, username, deviceId, fidoType);
+            logger.error("deleted device");
 
             Response.ResponseBuilder responseBuilder = Response.ok(request);
             return withCorsNoCache(responseBuilder, "DELETE");

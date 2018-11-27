@@ -1,2 +1,4 @@
+io.hanko.plugin.keycloak.HankoUsernameAuthenticatorFactory
 io.hanko.plugin.keycloak.HankoFormAuthenticatorFactory
+io.hanko.plugin.keycloak.HankoMultiAuthenticatorFactory
 io.hanko.plugin.keycloak.HankoUafAuthenticatorFactory

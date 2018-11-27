@@ -55,13 +55,16 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
     @Override
     public void action(AuthenticationFlowContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
+
         if (formData.containsKey("cancel")) {
             context.cancelLogin();
             return;
         }
+
         if (!validateForm(context, formData)) {
             return;
         }
+
         context.success();
     }
 

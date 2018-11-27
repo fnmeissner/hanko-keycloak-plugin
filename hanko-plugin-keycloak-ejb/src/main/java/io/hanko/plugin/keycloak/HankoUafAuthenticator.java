@@ -31,12 +31,11 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
 
         if (formData.containsKey("cancel")) {
-            logger.debug("login canceled by user");
-            cancelLogin(context);
+            context.resetFlow();
             return;
         }
 
-        logger.debug("waiting for challenge response");
+        logger.error("waiting for challenge response");
 
         // get current Hanko request ID
         UserModel currentUser = context.getUser();
@@ -83,7 +82,7 @@ public class HankoUafAuthenticator extends AbstractUsernameFormAuthenticator imp
         try {
             HankoClientConfig config = HankoUtils.createConfig(authenticationFlowContext.getSession());
             String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
-            HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress);
+            HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress, HankoClient.FidoType.FIDO_UAF);
             userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
             Response response = authenticationFlowContext.form().setAttribute("requestId", hankoRequest.id).createForm("login-hanko.ftl");

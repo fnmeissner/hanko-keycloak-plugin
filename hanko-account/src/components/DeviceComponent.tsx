@@ -16,11 +16,13 @@ export class DeviceComponent extends React.Component<DeviceProps> {
 
   deregister = () => {
     const { device, keycloak, deviceDeletedHandler } = this.props
-    fetchApi(keycloak, `/hanko/devices/${device.deviceId}`, 'DELETE').then(
-      _ => {
-        deviceDeletedHandler()
-      }
-    )
+    fetchApi(
+      keycloak,
+      `/hanko/devices/${device.type}/${device.deviceId}`,
+      'DELETE'
+    ).then(_ => {
+      deviceDeletedHandler()
+    })
   }
 
   render() {

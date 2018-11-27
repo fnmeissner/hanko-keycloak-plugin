@@ -24,6 +24,15 @@ public class HankoJsonParserJackson implements HankoJsonParser {
     }
 
     @Override
+    public <T> T parse(String inputString, Class<T> valueType) {
+        try {
+            return mapper.readValue(inputString, valueType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public <T> String serialize(T value) {
         try {
             return mapper.writeValueAsString(value);
