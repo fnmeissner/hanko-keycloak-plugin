@@ -1,33 +1,30 @@
-<ul>
+<div class="login-methods">
+    <h3>Or sign in using:</h3>
+    <div class="stretched-row">
     <#if loginMethod != "PASSWORD">
-        <li>
-            <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
-                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                       type="submit" name="switch" id="button_cancel" value="Password"/>
-                <input type="hidden" name="loginMethod" value="PASSWORD"/>
-            </form>
-        </li>
+        <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
+            <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
+                   type="submit" name="switch" id="button_cancel" value="Password"/>
+            <input type="hidden" name="loginMethod" value="PASSWORD"/>
+        </form>
     </#if>
     <#if loginMethod != "UAF">
         <#if hasUaf == true>
-            <li>
-                <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
-                    <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                           type="submit" name="switch" id="button_cancel" value="Authenticator"/>
-                    <input type="hidden" name="loginMethod" value="UAF"/>
-                </form>
-            </li>
+            <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
+                <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
+                       type="submit" name="switch" id="button_cancel" value="Authenticator"/>
+                <input type="hidden" name="loginMethod" value="UAF"/>
+            </form>
         </#if>
     </#if>
     <#if loginMethod != "WEBAUTHN">
         <#if hasWebAuthn == true>
-            <li>
-                <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
-                    <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                           type="submit" name="switch" id="button_cancel" value="WebAuthn"/>
-                    <input type="hidden" name="loginMethod" value="WEBAUTHN"/>
-                </form>
-            </li>
+            <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
+                <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
+                       type="submit" name="switch" id="button_cancel" value="WebAuthn"/>
+                <input type="hidden" name="loginMethod" value="WEBAUTHN"/>
+            </form>
         </#if>
     </#if>
-</ul>
+    </div>
+</div>
