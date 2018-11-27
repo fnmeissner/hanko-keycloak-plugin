@@ -1,5 +1,7 @@
 <div class="login-methods">
-    <h3>Or sign in using:</h3>
+    <#if hasLoginMethods == true>
+        <h3>Or sign in using:</h3>
+    </#if>
     <div class="stretched-row">
     <#if loginMethod != "PASSWORD">
         <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
