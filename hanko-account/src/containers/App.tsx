@@ -159,14 +159,14 @@ export class App extends React.Component<AppProps, AppState> {
                     keycloak={keycloak}
                     type="roaming"
                   >
-                    Add roaming Device
+                    Add Security Key
                   </AddWebAuthn>
                   <AddWebAuthn
                     refetch={this.fetchDevices}
                     keycloak={keycloak}
                     type="platform"
                   >
-                    Add this Device
+                    Add Windows Hello
                   </AddWebAuthn>
                 </div>
               )}
