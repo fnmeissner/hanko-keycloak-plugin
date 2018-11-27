@@ -4,6 +4,7 @@ export type Device = {
   type: string
   createdAt: string
   lastUsage: string
+  typeId: string
 }
 
 export const deviceFromJson = (device: any) => {
@@ -15,6 +16,7 @@ export const deviceFromJson = (device: any) => {
         : device.authenticatorType,
     createdAt: device.createdAt,
     lastUsage: device.lastUsage,
-    deviceId: device.deviceId
+    deviceId: device.deviceId,
+    typeId: device.authenticatorType
   }
 }

@@ -10,6 +10,7 @@ import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;
 import org.keycloak.credential.CredentialInput;
 import org.keycloak.events.Errors;
+import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserCredentialModel;
@@ -30,7 +31,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
     private final HankoUserStore userStore;
     private final HankoClient hankoClient;
 
-    private enum LoginMethod {PASSWORD, UAF, ROAMING_AUTHENTICATOR, PLATFORM_AUTHENTICATOR}
+    private enum LoginMethod {PASSWORD, UAF, WEBAUTHN} //ROAMING_AUTHENTICATOR, PLATFORM_AUTHENTICATOR}
 
     HankoMultiAuthenticator(HankoUserStore userStore, HankoClient hankoClient) {
         this.userStore = userStore;
@@ -48,7 +49,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
 
         if (formData.containsKey("switch")) {
             LoginMethod loginMethod = LoginMethod.valueOf(formData.getFirst("loginMethod"));
-            renderChallenge(loginMethod, context);
+            renderChallenge(loginMethod, context, getDevices(context));
             return;
         }
 
@@ -86,8 +87,8 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                 }
                 break;
 
-            case ROAMING_AUTHENTICATOR:
-                logger.error("checking roaming authenticator");
+            case WEBAUTHN:
+                logger.error("checking webauthn authenticator");
                 try {
                     // get Hanko API key from the Hanko UAF Authenticator configuration
                     HankoClientConfig config = HankoUtils.createConfig(context.getSession());
@@ -180,32 +181,45 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         context.resetFlow();
     }
 
-    private LoginMethod getLoginMethod(AuthenticationFlowContext authenticationFlowContext) {
+    private List<HankoDevice> getDevices(AuthenticationFlowContext authenticationFlowContext) {
+        List<HankoDevice> devices = new LinkedList<>();
+
         UserModel currentUser = authenticationFlowContext.getUser();
         String userId = userStore.getHankoUserId(currentUser);
-        String username = currentUser.getUsername();
 
-        if (userId == null || userId.trim().isEmpty()) {
-            return LoginMethod.PASSWORD;
-        } else {
-            List<HankoDevice> devices = new LinkedList<>();
+        if (!(userId == null || userId.trim().isEmpty())) {
             try {
                 HankoClientConfig config = HankoUtils.createConfig(authenticationFlowContext.getSession());
                 devices = Arrays.asList(hankoClient.getRegisteredDevices(config, userId));
             } catch (Exception ex) {
                 logger.error("Could not fetch user devices", ex);
             }
+        }
 
-            devices.stream().forEach(d -> logger.error(d.authenticatorType));
+        return devices;
+    }
 
-            boolean hasRoamingAuthenticator = (devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "ROAMING")));
-            boolean hasPlatformAuthenticator = (devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "PLATFORM")));
-            boolean hasUafAuthenticator = (devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "FIDO_UAF")));
+    private boolean hasUaf(List<HankoDevice> devices) {
+        return devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "FIDO_UAF"));
+    }
 
-            if (hasPlatformAuthenticator) {
-                return LoginMethod.PLATFORM_AUTHENTICATOR;
-            } else if (hasRoamingAuthenticator) {
-                return LoginMethod.ROAMING_AUTHENTICATOR;
+    private boolean hasWebAuthn(List<HankoDevice> devices) {
+        return devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "WEBAUTHN"));
+    }
+
+    private LoginMethod getLoginMethod(AuthenticationFlowContext authenticationFlowContext, List<HankoDevice> devices) {
+        UserModel currentUser = authenticationFlowContext.getUser();
+        String userId = userStore.getHankoUserId(currentUser);
+
+        if (userId == null || userId.trim().isEmpty()) {
+            return LoginMethod.PASSWORD;
+        } else {
+
+            boolean hasWebAuthnAuthenticator = hasWebAuthn(devices);
+            boolean hasUafAuthenticator = hasUaf(devices);
+
+            if (hasWebAuthnAuthenticator) {
+                return LoginMethod.WEBAUTHN;
             } else if (hasUafAuthenticator) {
                 return LoginMethod.UAF;
             } else {
@@ -216,14 +230,19 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
 
     @Override
     public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
-        LoginMethod loginMethod = getLoginMethod(authenticationFlowContext);
-        renderChallenge(loginMethod, authenticationFlowContext);
+        List<HankoDevice> devices = getDevices(authenticationFlowContext);
+        LoginMethod loginMethod = getLoginMethod(authenticationFlowContext, devices);
+        renderChallenge(loginMethod, authenticationFlowContext, devices);
     }
 
-    private void renderChallenge(LoginMethod loginMethod, AuthenticationFlowContext authenticationFlowContext) {
+    private void renderChallenge(LoginMethod loginMethod, AuthenticationFlowContext authenticationFlowContext, List<HankoDevice> devices) {
         UserModel currentUser = authenticationFlowContext.getUser();
         String userId = userStore.getHankoUserId(currentUser);
         String username = currentUser.getUsername();
+
+        LoginFormsProvider formsProvider = authenticationFlowContext.form();
+        formsProvider.setAttribute("hasUaf", hasUaf(devices));
+        formsProvider.setAttribute("hasWebAuthn", hasWebAuthn(devices));
 
         switch (loginMethod) {
             case UAF:
@@ -234,7 +253,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                     HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress, HankoClient.FidoType.FIDO_UAF);
                     userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
-                    Response response = authenticationFlowContext.form().setAttribute("requestId", hankoRequest.id).setAttribute("loginMethod", "UAF").createForm("hanko-multi-login.ftl");
+                    Response response = formsProvider.setAttribute("requestId", hankoRequest.id).setAttribute("loginMethod", "UAF").createForm("hanko-multi-login.ftl");
                     authenticationFlowContext.challenge(response);
 
                 } catch (HankoConfigurationException ex) {
@@ -242,15 +261,15 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                     cancelLogin(authenticationFlowContext);
                 }
                 break;
-            case ROAMING_AUTHENTICATOR:
-                logger.error("using roaming authenticator");
+            case WEBAUTHN:
+                logger.error("using webauthn authenticator");
                 try {
                     HankoClientConfig config = HankoUtils.createConfig(authenticationFlowContext.getSession());
                     String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
                     HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress, HankoClient.FidoType.WEBAUTHN);
                     userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
-                    Response response = authenticationFlowContext.form().setAttribute("request", hankoRequest.request).setAttribute("loginMethod", "ROAMING_AUTHENTICATOR").createForm("hanko-multi-login.ftl");
+                    Response response = formsProvider.setAttribute("request", hankoRequest.request).setAttribute("loginMethod", "WEBAUTHN").createForm("hanko-multi-login.ftl");
                     authenticationFlowContext.challenge(response);
 
                 } catch (HankoConfigurationException ex) {
@@ -259,7 +278,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                 }
                 break;
             default:
-                Response response = authenticationFlowContext.form().setAttribute("loginMethod", "PASSWORD").createForm("hanko-multi-login.ftl");
+                Response response = formsProvider.setAttribute("loginMethod", "PASSWORD").createForm("hanko-multi-login.ftl");
                 authenticationFlowContext.challenge(response);
                 break;
         }

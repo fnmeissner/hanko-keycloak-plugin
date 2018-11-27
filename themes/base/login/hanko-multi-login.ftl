@@ -5,20 +5,16 @@
             Sign in with Password
         <#elseif loginMethod = "UAF">
             Sign in with HANKO Authenticator
-        <#elseif loginMethod = "ROAMING_AUTHENTICATOR">
-            Sign in with Security Key
-        <#elseif loginMethod = "platformAuthenticator">
-            Sign in with Platform Authenticator
+        <#elseif loginMethod = "WEBAUTHN">
+            Sign in with WebAuthn
         </#if>
     <#elseif section = "header">
         <#if loginMethod = "PASSWORD">
             Sign in with Password
         <#elseif loginMethod = "UAF">
             Sign in with HANKO Authenticator
-        <#elseif loginMethod = "ROAMING_AUTHENTICATOR">
-            Sign in with Security Key
-        <#elseif loginMethod = "platformAuthenticator">
-            Sign in with Platform Authenticator
+        <#elseif loginMethod = "WEBAUTHN">
+            Sign in with WebAuthn
         </#if>
     <#elseif section = "form">
 
@@ -74,15 +70,15 @@
 
                 window.onload = awaitLoginComplete;
             </script>
-        <#elseif loginMethod = "ROAMING_AUTHENTICATOR">
-            <p>Please confirm your authentication with a Security Key registered with your account.</p>
+        <#elseif loginMethod = "WEBAUTHN">
+            <p>Please confirm your authentication with WebAuthn.</p>
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
                   method="post">
                 <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
                        type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
                 <input type="hidden" name="hankoresponse" id="hankoresponse" />
-                <input type="hidden" name="loginMethod" value="ROAMING_AUTHENTICATOR" />
+                <input type="hidden" name="loginMethod" value="WEBAUTHN" />
             </form>
             <script>
                 var fidoRequest = JSON.parse('${request?no_esc}');
@@ -147,16 +143,6 @@
                             console.error(reason)
                         });
             </script>
-            <#include "hanko-multi-login-links.ftl">
-        <#elseif loginMethod = "platformAuthenticator">
-                    <p>Please confirm your authentication with a Security Key registered with your account.</p>
-            <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
-                  id="kc-hanko-login-form"
-                  method="post">
-                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                       type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
-                <input type="hidden" name="loginMethod" value="ROAMING_AUTHENTICATOR" />
-            </form>
             <#include "hanko-multi-login-links.ftl">
         </#if>
 

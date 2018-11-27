@@ -18,7 +18,7 @@ export class DeviceComponent extends React.Component<DeviceProps> {
     const { device, keycloak, deviceDeletedHandler } = this.props
     fetchApi(
       keycloak,
-      `/hanko/devices/${device.type}/${device.deviceId}`,
+      `/hanko/devices/${device.typeId}/${device.deviceId}`,
       'DELETE'
     ).then(_ => {
       deviceDeletedHandler()
