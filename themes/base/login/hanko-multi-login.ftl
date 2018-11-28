@@ -76,7 +76,7 @@
         <#elseif loginMethod = "WEBAUTHN">
             <p>Please confirm your authentication with WebAuthn.</p>
 
-            <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 50px auto">
+            <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"

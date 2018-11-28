@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,700');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700');
 
 html {
   height: 100%;
@@ -58,7 +58,6 @@ body {
 .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
 }
 
 .login-pf-page .form-control {
@@ -108,7 +107,6 @@ div.kc-logo-text span {
   -webkit-font-smoothing: antialiased;
   height: 42px;
   -webkit-appearance: none;
-  margin-bottom: 20px;
 }
 
 .login-methods {
@@ -125,13 +123,14 @@ div.kc-logo-text span {
 .or {
   width: 100%;
   text-align: center;
-  border-bottom: 1px solid #777;
+  border-bottom: 1px solid #d0d0d0;
   line-height: 0.1em;
   margin: 10px 0 20px;
 }
 
 .or span {
   background:#fff;
+  font-weight: 600;
   padding:0 10px;
 }
 
@@ -174,6 +173,7 @@ input {
   font-smoothing: antialiased;
   -webkit-font-smoothing: antialiased;
   text-shadow: rgba(0, 0, 0, 0.01) 0 0 1px;
+  margin-bottom: 20px;
 }
 
 .form-control {
@@ -208,7 +208,7 @@ a {
 }
 
 #kc-form-buttons {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .input-wrapper,
