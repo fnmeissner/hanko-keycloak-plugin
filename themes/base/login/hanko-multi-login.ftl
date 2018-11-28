@@ -25,12 +25,15 @@
                     <input tabindex="2" id="password" class="${properties.kcInputClass!}" name="password"
                            type="password" autocomplete="off"/>
                 </div>
+                <div class="${properties.kcFormOptionsWrapperClass!}">
+                            <#if realm.resetPasswordAllowed>
+                                <span><a tabindex="5" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
+                            </#if>
+                </div>
                 <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
                     <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
                 </div>
                 <input type="hidden" name="loginMethod" value="PASSWORD" />
-                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                       type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
             </form>
             <#include "hanko-multi-login-links.ftl">
         <#elseif loginMethod = "UAF">
@@ -42,8 +45,6 @@
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
                   method="post">
-                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                       type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
                 <input type="hidden" name="loginMethod" value="UAF" />
             </form>
 
@@ -75,13 +76,11 @@
         <#elseif loginMethod = "WEBAUTHN">
             <p>Please confirm your authentication with WebAuthn.</p>
 
-            <img src="${url.resourcesPath}/img/windows-hello.jpg" style="display: block; margin: 0px auto">
+            <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 50px auto">
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
                   method="post">
-                <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!}"
-                       type="submit" name="cancel" id="button_cancel" value="${msg("doCancel")}"/>
                 <input type="hidden" name="hankoresponse" id="hankoresponse" />
                 <input type="hidden" name="loginMethod" value="WEBAUTHN" />
             </form>

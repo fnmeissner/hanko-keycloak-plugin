@@ -1,6 +1,6 @@
 <div class="login-methods">
     <#if hasLoginMethods == true>
-        <h3>Or sign in using:</h3>
+        <h3 class="or"><span>or</span></h3>
     </#if>
     <div class="stretched-row">
     <#if loginMethod != "PASSWORD">

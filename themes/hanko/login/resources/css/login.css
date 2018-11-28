@@ -55,11 +55,6 @@ body {
   }
 }
 
-.login-pf-page .login-pf-header h1,
-.login-pf-page .login-pf-header p {
-  text-align: center;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -105,17 +100,14 @@ div.kc-logo-text span {
 }
 
 .btn-login-method {
-  border: 1px solid #ea5953;
-  background-color: #ea5953;
-  color: #fafafa;
-  border-radius: 3px;
+  border: none;
+  background-color: transparent;
+  color: #222;
   font-weight: 700;
-  padding: 7px;
   cursor: pointer;
   -webkit-font-smoothing: antialiased;
   height: 42px;
   -webkit-appearance: none;
-  width: 150px;
   margin-bottom: 20px;
 }
 
@@ -126,8 +118,21 @@ div.kc-logo-text span {
 
 .stretched-row {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.or {
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #777;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
+}
+
+.or span {
+  background:#fff;
+  padding:0 10px;
 }
 
 .alert {
