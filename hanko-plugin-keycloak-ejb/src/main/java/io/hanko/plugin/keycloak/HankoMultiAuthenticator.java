@@ -244,6 +244,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         formsProvider.setAttribute("hasUaf", hasUaf(devices));
         formsProvider.setAttribute("hasWebAuthn", hasWebAuthn(devices));
         formsProvider.setAttribute("hasLoginMethods", hasUaf(devices) || hasWebAuthn(devices));
+        formsProvider.setAttribute("username", username);
 
         switch (loginMethod) {
             case UAF:

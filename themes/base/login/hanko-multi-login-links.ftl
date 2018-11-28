@@ -30,3 +30,12 @@
     </#if>
     </div>
 </div>
+
+<div id="kc-registration">
+    <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
+        <span>not ${username}?
+            <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!} btn-login-change-user"
+                  type="submit" name="cancel" id="button_cancel" value="change user"/>
+        </span>
+    </form>
+</div>

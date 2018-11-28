@@ -111,7 +111,6 @@ div.kc-logo-text span {
 
 .login-methods {
   margin-top: 40px;
-  margin-bottom: -40px;
 }
 
 .stretched-row {
@@ -130,7 +129,7 @@ div.kc-logo-text span {
 
 .or span {
   background:#fff;
-  font-weight: 600;
+  font-weight: 500;
   padding:0 10px;
 }
 
@@ -157,6 +156,18 @@ div.kc-logo-text span {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.btn-login-change-user {
+  border: none;
+  background-color: transparent;
+  color: #222;
+  font-weight: 500;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input {
@@ -189,10 +200,6 @@ input[type='checkbox'] {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.login-pf-signup {
-  margin: 40px 0 0;
 }
 
 a {
