@@ -82,7 +82,6 @@ export class App extends React.Component<AppProps, AppState> {
 
     const token = keycloak.token
     const jwt = token ? this.parseJwt(token) : {}
-    console.log(jwt)
     const username = jwt.name ? jwt.name : ''
     const email = jwt.email ? jwt.email : ''
 

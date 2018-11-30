@@ -18,12 +18,6 @@ const realm =
     ? (window as any).realmId
     : `${process.env.KEYCLOAK_REALM}`
 
-console.log('(window as any).realmId = ' + (window as any).realmId)
-console.log('(window as any).keycloakUrl = ' + (window as any).keycloakUrl)
-
-console.log('${process.env.KEYCLOAK_URL} = ' + process.env.KEYCLOAK_URL)
-console.log('${process.env.KEYCLOAK_REALM} = ' + process.env.KEYCLOAK_REALM)
-
 const keycloak = Keycloak({
   url: keycloakUrl,
   realm: realm,

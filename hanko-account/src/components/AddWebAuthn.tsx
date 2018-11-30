@@ -39,9 +39,7 @@ export class AddWebAuthn extends React.Component<
     // fetch request
     fetchApi(keycloak, '/hanko/registerType/WEBAUTHN', 'POST').then(
       registrationRequest => {
-        console.log(registrationRequest)
         const fidoRequest = JSON.parse(registrationRequest.request)
-        console.log(fidoRequest)
         const challenge = convertToBinary(fidoRequest.challenge)
 
         const pubKey = {
@@ -71,13 +69,9 @@ export class AddWebAuthn extends React.Component<
         }
 
         const s = navigator as any
-        console.log(pubKey)
         s.credentials
           .create({ publicKey: pubKey })
           .then((result: any) => {
-            console.log('Creating credential yielded following result:')
-            console.log(result)
-
             const attestationString = arrayBufferToBase64(
               result.response.attestationObject
             )
@@ -92,22 +86,17 @@ export class AddWebAuthn extends React.Component<
               challenge: fidoRequest.challenge,
               clientData: clientDataString
             }
-
-            console.log('response')
-            console.log(response)
-
             fetchApi(
               keycloak,
               '/hanko/request/verify/webauthn',
               'POST',
               response
             ).then(result => {
-              console.log(result)
               refetch()
             })
           })
           .catch((reason: any) => {
-            console.log(reason)
+            console.error(reason)
           })
       }
     )
