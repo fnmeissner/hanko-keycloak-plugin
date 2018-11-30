@@ -23,7 +23,7 @@
                 <div class="${properties.kcFormGroupClass!}">
                     <label for="password" class="${properties.kcLabelClass!}">${msg("password")}</label>
                     <input tabindex="2" id="password" class="${properties.kcInputClass!}" name="password"
-                           type="password" autocomplete="off"/>
+                           type="password" autocomplete="off" autofocus />
                 </div>
                 <div class="${properties.kcFormOptionsWrapperClass!}">
                             <#if realm.resetPasswordAllowed>
@@ -31,7 +31,7 @@
                             </#if>
                 </div>
                 <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
-                    <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" autofocus name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
+                    <input tabindex="4" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" name="login" id="kc-login" type="submit" value="${msg("doLogIn")}"/>
                 </div>
                 <input type="hidden" name="loginMethod" value="PASSWORD" />
             </form>
