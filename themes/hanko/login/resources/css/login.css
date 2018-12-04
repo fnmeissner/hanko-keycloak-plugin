@@ -67,6 +67,7 @@ p {
   padding: 8px;
   border-radius: 3px;
   border: 1px solid #d0d0d0;
+  font-size: 100%;
 }
 
 label {
