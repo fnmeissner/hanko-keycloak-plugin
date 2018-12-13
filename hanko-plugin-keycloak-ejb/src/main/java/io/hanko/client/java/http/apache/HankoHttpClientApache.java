@@ -86,10 +86,18 @@ public class HankoHttpClientApache implements HankoHttpClient {
             CloseableHttpResponse response = httpclient.execute(request);
             HttpEntity resultEntity = response.getEntity();
 
-            if (response.getStatusLine().getStatusCode() == 401) {
+            int statusCode = response.getStatusLine().getStatusCode();
+
+            if (statusCode == 401) {
                 String content = new BufferedReader(new InputStreamReader(resultEntity.getContent()))
                         .lines().collect(Collectors.joining("\n"));
                 throw new RuntimeException("Hanko API returned 401, please check your API key configuration: " + content);
+            }
+
+            if (statusCode >= 300) {
+                String content = new BufferedReader(new InputStreamReader(resultEntity.getContent()))
+                        .lines().collect(Collectors.joining("\n"));
+                throw new RuntimeException("Hanko API returned an unexpected status code: " + statusCode + "\n" + content);
             }
 
             return resultEntity.getContent();
