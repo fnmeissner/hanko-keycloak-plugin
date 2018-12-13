@@ -2,7 +2,6 @@
 
 html {
   height: 100%;
-
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
   /* Font varient */
@@ -24,10 +23,13 @@ body {
     ),
     url('../img/hank-background-pattern.png') repeat fixed;
   background-color: #2c2b3d;
-  font-family: Montserrat, Arial, sans-serif;
   background-size: 100%, 170px;
-  color: rgb(51, 51, 51);
-  font-size: 14px;
+  font-family: Montserrat, Arial, sans-serif;
+  color: #222;
+}
+
+p {
+  line-height: 1.5em;
 }
 
 .login-pf-page {
@@ -61,16 +63,19 @@ body {
 }
 
 .login-pf-page .form-control {
-  height: 36px;
+  height: 45px;
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid #d0d0d0;
+  font-size: 100%;
 }
 
 label {
   margin-bottom: 5px;
-  font-weight: 600;
-  line-height: 20px;
+  font-weight: 500;
 }
 
-@media only screen and (min-height: 820px) {
+@media only screen and (min-height: 900px) {
   div.kc-logo-text {
     background-image: url(../img/hanko-logo_white.png);
     background-size: cover;
@@ -80,8 +85,22 @@ label {
   }
 }
 
+@media only screen and (max-height: 899px) {
+  div.kc-logo-text {
+    background-image: url(../img/hanko-logo_white.png);
+    background-size: cover;
+    height: 50px;
+    width: 144px;
+    margin: 20px 0;
+  }
+}
+
 div.kc-logo-text span {
   display: none;
+}
+
+.btn {
+  font-size: 100%;
 }
 
 .btn-hanko {
@@ -94,7 +113,7 @@ div.kc-logo-text span {
   cursor: pointer;
   width: 100%;
   -webkit-font-smoothing: antialiased;
-  height: 42px;
+  height: 45px;
   -webkit-appearance: none;
 }
 
@@ -105,7 +124,7 @@ div.kc-logo-text span {
   font-weight: 700;
   cursor: pointer;
   -webkit-font-smoothing: antialiased;
-  height: 42px;
+  height: 45px;
   -webkit-appearance: none;
 }
 
@@ -123,20 +142,20 @@ div.kc-logo-text span {
   width: 100%;
   text-align: center;
   border-bottom: 1px solid #d0d0d0;
-  line-height: 0.1em;
+  line-height: 0px;
   margin: 10px 0 20px;
 }
 
 .or span {
   background:#fff;
   font-weight: 500;
-  padding:0 10px;
+  padding:0 20px;
 }
 
 .alert {
   margin-bottom: 20px;
   border-width: 1px;
-  padding: 11px;
+  padding: 8px;
   border-style: solid;
   line-height: 20px;
 }
@@ -144,7 +163,7 @@ div.kc-logo-text span {
 .alert-error {
   background-color: #ffffff;
   border-color: #ea5953;
-  color: #333333;
+  color: #222;
 }
 
 * {
@@ -163,7 +182,6 @@ div.kc-logo-text span {
   background-color: transparent;
   color: #222;
   font-weight: 500;
-  font-size: 12px;
   cursor: pointer;
   -webkit-font-smoothing: antialiased;
   -webkit-appearance: none;
@@ -172,7 +190,6 @@ div.kc-logo-text span {
 
 input {
   font-family: 'Montserrat';
-  font-size: 16px;
   font-weight: 400;
   -webkit-text-size-adjust: 100%;
   /* Font varient */
@@ -188,18 +205,21 @@ input {
 }
 
 .form-control {
-  padding: 2px 6px;
+  padding: 8px;
   line-height: 1.66666667;
 }
 
 input[type='checkbox'] {
-  margin-left: -1px;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  cursor: pointer;
 }
 
 #kc-registration {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 20px;
 }
 
 a {
@@ -212,6 +232,7 @@ a {
   font-weight: 500;
   margin: 0;
   display: flex;
+  cursor: pointer;
 }
 
 #kc-form-buttons {
