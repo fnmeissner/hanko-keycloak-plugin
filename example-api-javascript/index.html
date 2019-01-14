@@ -1,137 +1,141 @@
 <html>
-<head>
-     <script src="https://localhost:8443/auth/js/keycloak.js"></script>
-</head>
-<body>
-<h1>HANKO Account Status</h1>
+  <head>
+    <script src="https://localhost:8443/auth/js/keycloak.js"></script>
+  </head>
+  <body>
+    <h1>HANKO Account Status</h1>
 
-<label>Logged in:</label>
-<p id='logged-in-state'></p>
+    <label>Logged in:</label>
+    <p id="logged-in-state"></p>
 
-<label>Hanko enabled:</label>
-<p id='is-hanko-enabled'></p>
+    <label>Hanko enabled:</label>
+    <p id="is-hanko-enabled"></p>
 
-<input type="button" id="enableButton" value="enable Hanko"/>
-<input type="button" id="disableButton" value="disable Hanko"/>
-<input type="button" id="logoutButton" value="logout"/>
+    <input type="button" id="enableButton" value="enable Hanko" />
+    <input type="button" id="disableButton" value="disable Hanko" />
+    <input type="button" id="logoutButton" value="logout" />
 
-<div id="qrcodeDiv">
+    <div id="qrcodeDiv"></div>
 
-</div>
+    <script>
+      window.onload = function() {
+        const keycloak = Keycloak()
+        const loggedInState = document.getElementById('logged-in-state')
+        const hankoEnabledState = document.getElementById('is-hanko-enabled')
+        const enableButton = document.getElementById('enableButton')
+        const disableButton = document.getElementById('disableButton')
+        const logoutButton = document.getElementById('logoutButton')
+        const qrcode = document.getElementById('qrcodeDiv')
 
-<script>
-    window.onload = function () {
-        const keycloak = Keycloak();
-        const loggedInState = document.getElementById('logged-in-state');
-        const hankoEnabledState = document.getElementById('is-hanko-enabled');
-        const enableButton = document.getElementById('enableButton');
-        const disableButton = document.getElementById('disableButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const qrcode = document.getElementById('qrcodeDiv');
-
-        const runAfterRenewal = (func) => {
-            keycloak.updateToken(30).then(function () {
-                func();
-            }).catch(function () {
-                alert('Failed to refresh token');
-            });
-        };
+        const runAfterRenewal = func => {
+          keycloak
+            .updateToken(30)
+            .then(function() {
+              func()
+            })
+            .catch(function() {
+              alert('Failed to refresh token')
+            })
+        }
 
         const updateIsHankoEnabled = () => {
-            runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/master/hanko',
-                    {
-                        method: "GET",
-                        headers: {
-                            "Accept": "application/json",
-                            "authorization": "Bearer " + keycloak.token,
-                        }
-                    }).then(response => response.json())
-                    .catch(error => console.error('Error:', error))
-                    .then(res => {
-                        console.log('response: ', res);
-                        hankoEnabledState.innerText = res.isPasswordlessActive;
-                    });
-
-            });
-        };
+          runAfterRenewal(function() {
+            fetch(keycloak.authServerUrl + '/realms/master/hanko', {
+              method: 'GET',
+              headers: {
+                Accept: 'application/json',
+                authorization: 'Bearer ' + keycloak.token
+              }
+            })
+              .then(response => response.json())
+              .catch(error => console.error('Error:', error))
+              .then(res => {
+                hankoEnabledState.innerText = res.isPasswordlessActive
+              })
+          })
+        }
 
         const requestRegistration = () => {
-            runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/master/hanko/register',
-                    {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json",
-                            "authorization": "Bearer " + keycloak.token,
-                        }
-                    }).then(response => response.json())
-                    .catch(error => console.error('Error:', error))
-                    .then(res => {
-                        console.log('response: ', res);
-                        qrcode.innerHTML = "<img src=\"" + res.qrCode + "\" />";
-                        awaitRegistrationComplete();
-                    });
-            });
-        };
+          runAfterRenewal(function() {
+            fetch(keycloak.authServerUrl + '/realms/master/hanko/register', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                authorization: 'Bearer ' + keycloak.token
+              }
+            })
+              .then(response => response.json())
+              .catch(error => console.error('Error:', error))
+              .then(res => {
+                qrcode.innerHTML = '<img src="' + res.qrCode + '" />'
+                awaitRegistrationComplete()
+              })
+          })
+        }
 
         const awaitRegistrationComplete = () => {
-            runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/master/hanko/register/complete',
-                    {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json",
-                            "authorization": "Bearer " + keycloak.token,
-                        }
-                    }).then(response => response.json())
-                    .catch(error => console.error('Error:', error))
-                    .then(res => {
-                        console.log('response: ', res);
-                        if(res.status === "PENDING") {
-                            setTimeout(function(){ awaitRegistrationComplete(); }, 500);
-                        } else {
-                            qrcode.innerHTML = "";
-                            updateIsHankoEnabled();
-                        }
-                    });
-            });
-        };
+          runAfterRenewal(function() {
+            fetch(
+              keycloak.authServerUrl + '/realms/master/hanko/register/complete',
+              {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  authorization: 'Bearer ' + keycloak.token
+                }
+              }
+            )
+              .then(response => response.json())
+              .catch(error => console.error('Error:', error))
+              .then(res => {
+                if (res.status === 'PENDING') {
+                  setTimeout(function() {
+                    awaitRegistrationComplete()
+                  }, 500)
+                } else {
+                  qrcode.innerHTML = ''
+                  updateIsHankoEnabled()
+                }
+              })
+          })
+        }
 
         const disableHanko = () => {
-            runAfterRenewal(function () {
-                fetch(keycloak.authServerUrl + '/realms/master/hanko/deregister',
-                    {
-                        method: "POST",
-                        headers: {
-                            "Accept": "application/json",
-                            "authorization": "Bearer " + keycloak.token,
-                        }
-                    }).then(response => response.json())
-                    .catch(error => console.error('Error:', error))
-                    .then(res => {
-                        console.log('response: ', res);
-                        qrcode.innerHTML = "";
-                        updateIsHankoEnabled();
-                    });
-            });
-        };
+          runAfterRenewal(function() {
+            fetch(keycloak.authServerUrl + '/realms/master/hanko/deregister', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                authorization: 'Bearer ' + keycloak.token
+              }
+            })
+              .then(response => response.json())
+              .catch(error => console.error('Error:', error))
+              .then(res => {
+                qrcode.innerHTML = ''
+                updateIsHankoEnabled()
+              })
+          })
+        }
 
-        keycloak.init({onLoad: 'login-required'}).then((authenticated) => {
-            loggedInState.innerText = authenticated ? 'authenticated' : 'not authenticated';
+        keycloak
+          .init({ onLoad: 'login-required' })
+          .then(authenticated => {
+            loggedInState.innerText = authenticated
+              ? 'authenticated'
+              : 'not authenticated'
 
             if (authenticated) {
-                updateIsHankoEnabled();
-                enableButton.onclick = requestRegistration;
-                disableButton.onclick = disableHanko;
-                logoutButton.onclick = keycloak.logout;
+              updateIsHankoEnabled()
+              enableButton.onclick = requestRegistration
+              disableButton.onclick = disableHanko
+              logoutButton.onclick = keycloak.logout
             }
-
-        }).catch(function () {
-            alert('failed to initialize');
-        });
-    }
-
-</script>
-</body>
+          })
+          .catch(function() {
+            alert('failed to initialize')
+          })
+      }
+    </script>
+  </body>
 </html>
