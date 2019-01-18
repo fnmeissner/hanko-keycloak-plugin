@@ -22,19 +22,6 @@
         <version.keycloak>4.5.0.Final</version.keycloak>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>bintray-hanko-jvm-sdks</id>
-            <name>bintray-plugins</name>
-            <url>https://dl.bintray.com/hanko/jvm-sdks</url>
-        </repository>
-        <repository>
-            <id>central</id>
-            <name>bintray</name>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -61,6 +48,22 @@
                 <artifactId>keycloak-services</artifactId>
                 <scope>provided</scope>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-model-jpa</artifactId>
+                <scope>provided</scope>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>5.1.15.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>5.1.15.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

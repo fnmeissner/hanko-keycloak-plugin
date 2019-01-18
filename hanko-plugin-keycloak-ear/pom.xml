@@ -4,6 +4,7 @@
         <artifactId>hanko-plugin-keycloak-parent</artifactId>
         <groupId>io.hanko.plugins.keycloak</groupId>
         <version>0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>HANKO Plugin Keycloak EAR</name>
