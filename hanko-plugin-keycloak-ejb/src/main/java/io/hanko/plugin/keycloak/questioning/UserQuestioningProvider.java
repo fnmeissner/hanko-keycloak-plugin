@@ -127,7 +127,7 @@ public class UserQuestioningProvider extends HankoResourceProvider {
                 HankoClientConfig config = HankoUtils.createConfig(session);
                 HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, entity.getHankoId());
                 if(!hankoRequest.status.equals("PENDING")) {
-                    String algorithm = session.tokens().signatureAlgorithm(TokenCategory.INTERNAL);
+                    String algorithm = session.tokens().signatureAlgorithm(TokenCategory.ACCESS);
                     SignatureSignerContext signer = session.getProvider(SignatureProvider.class, algorithm).signer();
                     UserStatementTokenRepresentation token = new UserStatementTokenRepresentation();
                     token.setAudience(auth.getToken().getAudience());
