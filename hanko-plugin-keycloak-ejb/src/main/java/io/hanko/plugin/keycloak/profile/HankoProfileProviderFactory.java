@@ -1,10 +1,7 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.profile;
 
 import io.hanko.client.java.HankoClient;
-import io.hanko.client.java.http.HankoHttpClientFactory;
-import io.hanko.client.java.http.apache.HankoHttpClientFactoryApache;
-import io.hanko.client.java.json.HankoJsonParserFactory;
-import io.hanko.client.java.json.jackson.HankoJsonParserFactoryJackson;
+import io.hanko.plugin.keycloak.common.HankoUtils;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.Config;
 import org.keycloak.models.KeycloakSession;
@@ -14,7 +11,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.resource.RealmResourceProviderFactory;
 import org.keycloak.theme.FreeMarkerUtil;
 
-public class HankoResourceProviderFactory implements RealmResourceProviderFactory //, ConfiguredProvider
+public class HankoProfileProviderFactory implements RealmResourceProviderFactory //, ConfiguredProvider
 {
     public static final String ID = "hanko";
 
@@ -29,12 +26,8 @@ public class HankoResourceProviderFactory implements RealmResourceProviderFactor
 
     @Override
     public RealmResourceProvider create(KeycloakSession session) {
-        HankoHttpClientFactory httpClientFactory =
-                new HankoHttpClientFactoryApache();
-        HankoJsonParserFactory jsonParserFactory = new HankoJsonParserFactoryJackson();
-        HankoClient hankoClient = new HankoClient(httpClientFactory, jsonParserFactory);
-
-        HankoResourceProvider provider = new HankoResourceProvider(session, hankoClient, freeMarker);
+        HankoClient hankoClient = HankoUtils.createHankoClient();
+        HankoProfileProvider provider = new HankoProfileProvider(session, hankoClient, freeMarker);
         ResteasyProviderFactory.getInstance().injectProperties(provider);
         return provider;
     }

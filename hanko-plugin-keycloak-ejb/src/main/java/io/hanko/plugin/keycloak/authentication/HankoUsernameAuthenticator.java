@@ -1,4 +1,4 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.authentication;
 
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;

@@ -1,1 +1,2 @@
-io.hanko.plugin.keycloak.HankoResourceProviderFactory
+io.hanko.plugin.keycloak.profile.HankoProfileProviderFactory
+io.hanko.plugin.keycloak.questioning.UserQuestioningProviderFactory

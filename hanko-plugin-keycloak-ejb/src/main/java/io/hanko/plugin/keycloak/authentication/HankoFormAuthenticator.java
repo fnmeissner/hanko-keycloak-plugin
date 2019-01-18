@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.authentication;
 
 import io.hanko.client.java.HankoClient;
 import io.hanko.client.java.HankoClientConfig;
+import io.hanko.plugin.keycloak.common.HankoUtils;
 import org.jboss.resteasy.specimpl.MultivaluedMapImpl;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;

@@ -1,8 +1,10 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.authentication;
 
 import io.hanko.client.java.HankoClient;
 import io.hanko.client.java.HankoClientConfig;
 import io.hanko.client.java.models.HankoRequest;
+import io.hanko.plugin.keycloak.common.HankoConfigurationException;
+import io.hanko.plugin.keycloak.common.HankoUtils;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.authenticators.browser.AbstractUsernameFormAuthenticator;

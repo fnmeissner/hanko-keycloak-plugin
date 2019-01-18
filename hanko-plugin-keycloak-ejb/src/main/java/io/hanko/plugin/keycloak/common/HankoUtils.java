@@ -1,22 +1,32 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.common;
 
+import io.hanko.client.java.HankoClient;
 import io.hanko.client.java.HankoClientConfig;
+import io.hanko.client.java.http.HankoHttpClientFactory;
+import io.hanko.client.java.http.apache.HankoHttpClientFactoryApache;
+import io.hanko.client.java.json.HankoJsonParserFactory;
+import io.hanko.client.java.json.jackson.HankoJsonParserFactoryJackson;
+import org.apache.commons.codec.binary.Base64;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.services.ServicesLogger;
+import org.keycloak.services.resources.Cors;
+import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
+import javax.ws.rs.core.Response;
+import java.io.*;
 import java.util.Formatter;
 
 public class HankoUtils {
-    static String CONFIG_API_URL = "hanko.apiurl";
-    static String CONFIG_APIKEY = "hanko.apikey";
-    static String CONFIG_APIKEYID = "hanko.apikeyid";
-    static String CONFIG_HAS_PROXY = "hanko.hasproxy";
-    static String CONFIG_PROXY_ADDRESS = "hanko.proxyaddress";
-    static String CONFIG_PROXY_PORT = "hanko.proxyport";
-    static String CONFIG_PROXY_TYPE= "hanko.proxytype";
-    static String AUTH_NOTE_IS_USER_AUTHENTICATED = "HANKO_REQUIRED";
+    public static String CONFIG_API_URL = "hanko.apiurl";
+    public static String CONFIG_APIKEY = "hanko.apikey";
+    public static String CONFIG_APIKEYID = "hanko.apikeyid";
+    public static String CONFIG_HAS_PROXY = "hanko.hasproxy";
+    public static String CONFIG_PROXY_ADDRESS = "hanko.proxyaddress";
+    public static String CONFIG_PROXY_PORT = "hanko.proxyport";
+    public static String CONFIG_PROXY_TYPE= "hanko.proxytype";
+    public static String AUTH_NOTE_IS_USER_AUTHENTICATED = "HANKO_REQUIRED";
 
     private static ServicesLogger logger = ServicesLogger.LOGGER;
 
@@ -37,7 +47,7 @@ public class HankoUtils {
         }
     }
 
-    static HankoClientConfig createConfig(KeycloakSession session) throws HankoConfigurationException  {
+    public static HankoClientConfig createConfig(KeycloakSession session) throws HankoConfigurationException  {
         String apiUrl = getApiUrl(session);
         String apiKeyId = getApiKeyId(session);
         String apiKeySecret = getApiKey(session);
@@ -156,11 +166,11 @@ public class HankoUtils {
                 "in your authentication flow.");
     }
 
-    static void setIsUserAuthenticated(AuthenticationSessionModel authSession) {
+    public static void setIsUserAuthenticated(AuthenticationSessionModel authSession) {
         authSession.setAuthNote(AUTH_NOTE_IS_USER_AUTHENTICATED, Boolean.toString(true));
     }
 
-    static boolean isUserAuthenticated(AuthenticationSessionModel authSession) {
+    public static boolean isUserAuthenticated(AuthenticationSessionModel authSession) {
         String authNote = authSession.getAuthNote(AUTH_NOTE_IS_USER_AUTHENTICATED);
         try {
             return Boolean.parseBoolean(authNote);
@@ -170,7 +180,7 @@ public class HankoUtils {
         }
     }
 
-    static void removeHankoRequiredAuthNote(AuthenticationSessionModel authSession) {
+    public static void removeHankoRequiredAuthNote(AuthenticationSessionModel authSession) {
         authSession.removeAuthNote(AUTH_NOTE_IS_USER_AUTHENTICATED);
     }
 
@@ -180,5 +190,56 @@ public class HankoUtils {
             formatter.format("%02x", b);
         }
         return formatter.toString();
+    }
+
+    public static Response withCorsNoCache(Response.ResponseBuilder responseBuilder,
+                                           String method,
+                                           RequestAttributes requestAttributes) {
+        Response.ResponseBuilder withoutCache = responseBuilder.cacheControl(CacheControlUtil.noCache());
+        if(requestAttributes.getToken() != null) {
+            return Cors.add(requestAttributes.getRequest(), withoutCache)
+                    .allowedMethods(method)
+                    .allowedOrigins(requestAttributes.getToken())
+                    .auth()
+                    .build();
+        } else if(requestAttributes.getContext().getClient() != null) {
+            return Cors.add(requestAttributes.getRequest(), withoutCache)
+                    .allowedMethods(method)
+                    .allowedOrigins(requestAttributes.getUriInfo(), requestAttributes.getContext().getClient())
+                    .auth()
+                    .build();
+        } else {
+            return Cors.add(requestAttributes.getRequest(), withoutCache)
+                    .allowAllOrigins()
+                    .allowedMethods(method)
+                    .auth()
+                    .build();
+        }
+    }
+
+    public static HankoClient createHankoClient() {
+        HankoHttpClientFactory httpClientFactory =
+                new HankoHttpClientFactoryApache();
+        HankoJsonParserFactory jsonParserFactory = new HankoJsonParserFactoryJackson();
+        return new HankoClient(httpClientFactory, jsonParserFactory);
+    }
+    public static String serializeArray(String[] data) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            new ObjectOutputStream(out).writeObject(data);
+            return new String(Base64.encodeBase64(out.toByteArray()));
+        } catch (IOException e) {
+            throw new RuntimeException("serialization error", e);
+        }
+    }
+
+    public static String[] deserializeArray(String data) {
+        ByteArrayInputStream in = new ByteArrayInputStream(Base64.decodeBase64(data.getBytes()));
+        try {
+            return (String[]) new ObjectInputStream(in).readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("serialization error", e);
+        }
     }
 }

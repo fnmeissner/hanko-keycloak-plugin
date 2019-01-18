@@ -1,6 +1,6 @@
 package io.hanko.client.java;
 
-import io.hanko.plugin.keycloak.HankoUtils;
+import io.hanko.plugin.keycloak.common.HankoUtils;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;

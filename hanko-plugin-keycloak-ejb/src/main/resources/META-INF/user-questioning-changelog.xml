@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="erik.mulder@docdatapayments.com" id="example-1.0">
+
+        <createTable tableName="USER_QUESTIONING_REQUEST">
+            <column name="ID" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLIENT_NOTIFICATION_TOKEN" type="VARCHAR(256)">
+            </column>
+            <column name="USER_ID" type="VARCHAR(256)">
+            </column>
+            <column name="USER_ID_TYPE" type="VARCHAR(256)">
+            </column>
+            <column name="QUESTION_TO_DISPLAY" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATEMENTS_TO_DISPLAY" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WISHED_AMR" type="VARCHAR(256)">
+            </column>
+            <column name="WISHED_ACR" type="VARCHAR(256)">
+            </column>
+            <column name="HANKO_ID" type="VARCHAR(256)">
+            </column>
+            <column name="IS_PENDING" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="USER_STATEMENT_TOKEN" type="VARCHAR">
+            </column>
+        </createTable>
+
+        <addPrimaryKey
+                constraintName="PK_USER_QUESTIONING_REQUEST"
+                tableName="USER_QUESTIONING_REQUEST"
+                columnNames="ID"
+        />
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,4 +1,4 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.common;
 
 public class HankoConfigurationException extends Exception {
     public HankoConfigurationException() {

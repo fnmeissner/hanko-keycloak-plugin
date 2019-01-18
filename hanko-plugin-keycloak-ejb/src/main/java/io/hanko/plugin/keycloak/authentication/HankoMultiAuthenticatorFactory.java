@@ -1,10 +1,11 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.authentication;
 
 import io.hanko.client.java.HankoClient;
 import io.hanko.client.java.http.HankoHttpClientFactory;
 import io.hanko.client.java.http.apache.HankoHttpClientFactoryApache;
 import io.hanko.client.java.json.HankoJsonParserFactory;
 import io.hanko.client.java.json.jackson.HankoJsonParserFactoryJackson;
+import io.hanko.plugin.keycloak.common.HankoUtils;
 import org.keycloak.Config;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;

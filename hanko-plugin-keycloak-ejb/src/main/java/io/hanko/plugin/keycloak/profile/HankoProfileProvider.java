@@ -1,4 +1,4 @@
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.profile;
 
 import io.hanko.client.java.HankoClient;
 import io.hanko.client.java.HankoClientConfig;
@@ -6,59 +6,42 @@ import io.hanko.client.java.models.ChangePassword;
 import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
+import io.hanko.plugin.keycloak.common.HankoResourceProvider;
+import io.hanko.plugin.keycloak.common.HankoUtils;
+import io.hanko.plugin.keycloak.authentication.HankoCredentialProvider;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
 import io.hanko.plugin.keycloak.serialization.WebAuthnResponse;
-import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
 import org.keycloak.forms.account.freemarker.model.UrlBean;
-import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserCredentialModel;
-import org.keycloak.models.UserModel;
-import org.keycloak.representations.AccessToken;
 import org.keycloak.services.ServicesLogger;
-import org.keycloak.services.managers.AppAuthManager;
-import org.keycloak.services.managers.AuthenticationManager;
-import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.resources.Cors;
-import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.theme.FreeMarkerException;
 import org.keycloak.theme.FreeMarkerUtil;
 import org.keycloak.theme.Theme;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
-public class HankoResourceProvider implements RealmResourceProvider {
-    private final KeycloakSession session;
-    private final KeycloakContext context;
-    private final HankoClient hankoClient;
-
+public class HankoProfileProvider extends HankoResourceProvider {
     private static ServicesLogger logger = ServicesLogger.LOGGER;
 
-    private AuthenticationManager.AuthResult auth;
-    private AccessToken token;
-    private HankoUserStore userStore;
     private FreeMarkerUtil freeMarker;
 
-    HankoResourceProvider(KeycloakSession session, HankoClient hankoClient, FreeMarkerUtil freeMarker) {
-        this.session = session;
-        this.context = session.getContext();
-        this.hankoClient = hankoClient;
+    HankoProfileProvider(KeycloakSession session, HankoClient hankoClient, FreeMarkerUtil freeMarker) {
+        super(session, hankoClient);
         this.freeMarker = freeMarker;
     }
-
-    @Context
-    protected HttpRequest request;
-
-    @Context
-    private UriInfo uriInfo;
 
     @Override
     public Object getResource() {
@@ -100,12 +83,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
             HankoStatus status = new HankoStatus(isConfiguredForHanko && hasRegisteredDevices);
             Response.ResponseBuilder responseBuilder = Response.ok(status);
-            return withCorsNoCache(responseBuilder, "GET");
+            return HankoUtils.withCorsNoCache(responseBuilder, "GET", this);
 
         } catch(Exception ex) {
             String response = logAndFail("Could not fetch user devices from Hanko.", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
-            return withCorsNoCache(responseBuilder, "GET");
+            return HankoUtils.withCorsNoCache(responseBuilder, "GET", this);
         }
     }
 
@@ -151,11 +134,11 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoRegistrationChallenge hankoRegistrationChallenge = new HankoRegistrationChallenge(hankoRequest.id, qrCode, hankoRequest.request);
 
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRegistrationChallenge);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Could not request Hanko registration.", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         }
     }
 
@@ -177,11 +160,11 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoRequest hankoRequest = hankoClient.validateWebAuthn(config, requestId, webAuthnResponse);
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         }
     }
 
@@ -210,7 +193,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             }
 
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Could not request Hanko registration", ex);
             return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "POST");
@@ -230,19 +213,20 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
         try {
             HankoClientConfig config = HankoUtils.createConfig(session);
-            hankoClient.requestDeregistration(config, hankoUserId, username);
+            String remoteAddress = context.getConnection().getRemoteAddr();
+            hankoClient.requestDeregistration(config, hankoUserId, username, remoteAddress);
         } catch (Exception ex) {
             String response = logAndFail("Could not deregister device at Hanko. " +
                     "The device will be disabled in Keycloak enyways.", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         }
 
         session.userCredentialManager().disableCredentialType(context.getRealm(), auth.getUser(), HankoCredentialProvider.TYPE);
 
         HankoStatus hankoStatus = new HankoStatus(false);
         Response.ResponseBuilder responseBuilder = Response.ok(hankoStatus);
-        return withCorsNoCache(responseBuilder, "POST");
+        return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
     }
 
     @GET
@@ -312,11 +296,11 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, requestId);
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
             Response.ResponseBuilder responseBuilder = Response.serverError().entity(response);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         }
     }
 
@@ -336,7 +320,7 @@ public class HankoResourceProvider implements RealmResourceProvider {
             }
 
             Response.ResponseBuilder responseBuilder = Response.ok(devices);
-            return withCorsNoCache(responseBuilder, "POST");
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Could not retrieve users devices", ex);
             return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "GET");
@@ -360,11 +344,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoClient.FidoType fidoType = HankoClient.FidoType.valueOf(fidoTypeString);
             logger.error("deleting device");
-            HankoRequest request = hankoClient.deleteDevice(config, hankoUserId, username, deviceId, fidoType);
+            String remoteAddress = context.getConnection().getRemoteAddr();
+            HankoRequest request = hankoClient.deleteDevice(config, hankoUserId, username, deviceId, remoteAddress, fidoType);
             logger.error("deleted device");
 
             Response.ResponseBuilder responseBuilder = Response.ok(request);
-            return withCorsNoCache(responseBuilder, "DELETE");
+            return HankoUtils.withCorsNoCache(responseBuilder, "DELETE", this);
         } catch (Exception ex) {
             String response = logAndFail("Could not delete users device", ex);
             return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "DELETE");
@@ -388,60 +373,12 @@ public class HankoResourceProvider implements RealmResourceProvider {
 
 
         Response.ResponseBuilder responseBuilder = Response.ok();
-        return withCorsNoCache(responseBuilder, "POST");
+        return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
     }
 
     private Response withError(String error, Response.Status status, String method) {
         ErrorMessage errorMessage = new ErrorMessage(error);
         Response.ResponseBuilder responseBuilder = Response.status(status).entity(errorMessage);
-        return withCorsNoCache(responseBuilder, method);
+        return HankoUtils.withCorsNoCache(responseBuilder, method, this);
     }
-
-    private Response withCorsNoCache(Response.ResponseBuilder responseBuilder, String method) {
-        Response.ResponseBuilder withoutCache = responseBuilder.cacheControl(CacheControlUtil.noCache());
-        if(token != null) {
-            return Cors.add(request, withoutCache)
-                    .allowedMethods(method)
-                    .allowedOrigins(token)
-                    .auth()
-                    .build();
-        } else if(context.getClient() != null) {
-            return Cors.add(request, withoutCache)
-                    .allowedMethods(method)
-                    .allowedOrigins(uriInfo, context.getClient())
-                    .auth()
-                    .build();
-        } else {
-            return Cors.add(request, withoutCache)
-                    .allowAllOrigins()
-                    .allowedMethods(method)
-                    .auth()
-                    .build();
-        }
-    }
-
-    private String logAndFail(String message, Exception ex) {
-        logger.error(message, ex);
-        return "An internal server error occurred, please check your logs.";
-    }
-
-    private void ensureIsAuthenticatedUser() {
-        this.auth = new AppAuthManager().authenticateBearerToken(session, session.getContext().getRealm());
-
-        if (auth == null) {
-            throw new NotAuthorizedException("Bearer");
-        }
-
-        userStore = new HankoUserStore();
-        token = auth.getToken();
-    }
-
-    private UserModel currentUser() {
-        return auth.getUser();
-    }
-
-    @Override
-    public void close() {
-    }
-
 }

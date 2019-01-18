@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.hanko.plugin.keycloak;
+package io.hanko.plugin.keycloak.authentication;
 
 import org.jboss.logging.Logger;
 import org.keycloak.common.util.Time;
