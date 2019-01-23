@@ -132,7 +132,7 @@ div.kc-logo-text span {
   margin-top: 40px;
 }
 
-.row {
+.flexrow {
   display: flex;
   flex-direction: row;
 } 

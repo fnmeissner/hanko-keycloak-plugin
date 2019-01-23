@@ -76,7 +76,7 @@
         <#elseif loginMethod = "WEBAUTHN">
             <p>Please confirm your authentication with WebAuthn.</p>
 
-            <div class="row">
+            <div class="flexrow">
                 <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
                 <img src="${url.resourcesPath}/img/yubikey.png" style="display: block; margin: 85px auto">
             </div>
