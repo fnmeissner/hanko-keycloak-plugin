@@ -40,10 +40,7 @@
             <p>Please confirm your authentication with the HANKO Authenticator you registered with your account. We have
                 sent a notification to your device.</p>
 
-            <div class="row">
-                <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
-                <img src="${url.resourcesPath}/img/yubikey.png" width="120" style="display: block; margin: 50px auto">
-            <div/>
+            <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
@@ -79,7 +76,10 @@
         <#elseif loginMethod = "WEBAUTHN">
             <p>Please confirm your authentication with WebAuthn.</p>
 
-            <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
+            <div class="row">
+                <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
+                <img src="${url.resourcesPath}/img/yubikey.png" style="display: block; margin: 85px auto">
+            </row>
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
