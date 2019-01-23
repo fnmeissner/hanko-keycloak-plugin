@@ -40,7 +40,10 @@
             <p>Please confirm your authentication with the HANKO Authenticator you registered with your account. We have
                 sent a notification to your device.</p>
 
-            <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
+            <div class="row">
+                <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
+                <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
+            <div/>
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
