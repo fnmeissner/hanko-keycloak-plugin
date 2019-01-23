@@ -77,8 +77,12 @@
             <p>Please confirm your authentication with WebAuthn.</p>
 
             <div class="flexrow">
-                <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
-                <img src="${url.resourcesPath}/img/yubikey.png" style="display: block; margin: 85px auto">
+                <div class="imgwrapper">
+                    <img src="${url.resourcesPath}/img/windows-hello.png">
+                </div>
+                <div class="imgwrapper">
+                    <img src="${url.resourcesPath}/img/yubikey.png">
+                </div>
             </div>
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
