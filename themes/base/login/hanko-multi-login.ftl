@@ -42,7 +42,7 @@
 
             <div class="row">
                 <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
-                <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
+                <img src="${url.resourcesPath}/img/yubikey.png" width="120" style="display: block; margin: 50px auto">
             <div/>
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
