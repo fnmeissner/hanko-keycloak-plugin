@@ -79,7 +79,7 @@
             <div class="row">
                 <img src="${url.resourcesPath}/img/windows-hello.png" style="display: block; margin: 85px auto">
                 <img src="${url.resourcesPath}/img/yubikey.png" style="display: block; margin: 85px auto">
-            </row>
+            </div>
 
             <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}"
                   id="kc-hanko-login-form"
