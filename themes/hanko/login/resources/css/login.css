@@ -135,6 +135,9 @@ div.kc-logo-text span {
 .flexrow {
   display: flex;
   flex-direction: row;
+  height: 190px;
+  justify-content: space-around;
+  align-items: center;
 } 
 
 .stretched-row {
