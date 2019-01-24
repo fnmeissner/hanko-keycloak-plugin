@@ -36,7 +36,7 @@ public class HankoHttpClientApache implements HankoHttpClient {
 
         // add json body
         try {
-            StringEntity entity = new StringEntity(json);
+            StringEntity entity = new StringEntity(json, "UTF-8");
             request.setEntity(entity);
             String path = request.getURI().getPath();
             String method = request.getMethod();
