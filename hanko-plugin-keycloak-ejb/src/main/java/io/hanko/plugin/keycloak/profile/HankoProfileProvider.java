@@ -7,6 +7,7 @@ import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.authentication.HankoCredentialProvider;
+import io.hanko.plugin.keycloak.authentication.HankoMultiAuthenticator;
 import io.hanko.plugin.keycloak.common.HankoResourceProvider;
 import io.hanko.plugin.keycloak.common.HankoUtils;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
@@ -160,7 +161,7 @@ public class HankoProfileProvider extends HankoResourceProvider {
             if(hankoRequest.isConfirmed()) {
                 URI uri = context.getUri().getBaseUriBuilder().path("realms").path(context.getRealm().getName()).build();
                 int maxCookieAge = 60 * 60 * 24 * 365; // 365 days
-                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", null, uri.getRawPath(), null, null, maxCookieAge, false, true));
+                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", HankoMultiAuthenticator.LoginMethod.WEBAUTHN.name(), uri.getRawPath(), null, null, maxCookieAge, false, true));
             }
             return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
@@ -196,7 +197,7 @@ public class HankoProfileProvider extends HankoResourceProvider {
                 session.userCredentialManager().updateCredential(context.getRealm(), auth.getUser(), credentials);
                 URI uri = context.getUri().getBaseUriBuilder().path("realms").path(context.getRealm().getName()).build();
                 int maxCookieAge = 60 * 60 * 24 * 365; // 365 days
-                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", null, uri.getRawPath(), null, null, maxCookieAge, false, true));
+                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", HankoMultiAuthenticator.LoginMethod.UAF.name(), uri.getRawPath(), null, null, maxCookieAge, false, true));
             }
 
             return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);

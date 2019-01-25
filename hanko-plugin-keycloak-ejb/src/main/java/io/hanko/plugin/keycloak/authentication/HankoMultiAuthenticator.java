@@ -35,7 +35,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
     private final HankoUserStore userStore;
     private final HankoClient hankoClient;
 
-    private enum LoginMethod {PASSWORD, UAF, WEBAUTHN} //ROAMING_AUTHENTICATOR, PLATFORM_AUTHENTICATOR}
+    public enum LoginMethod {PASSWORD, UAF, WEBAUTHN} //ROAMING_AUTHENTICATOR, PLATFORM_AUTHENTICATOR}
 
     HankoMultiAuthenticator(HankoUserStore userStore, HankoClient hankoClient) {
         this.userStore = userStore;
