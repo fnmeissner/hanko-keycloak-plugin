@@ -19,9 +19,11 @@ import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
+import org.keycloak.services.util.CookieHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +59,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
 
         // get current Hanko request ID
         UserModel currentUser = context.getUser();
-        if(currentUser == null) {
+        if (currentUser == null) {
             logger.error("user is null");
         } else {
             logger.error("current user: " + currentUser.getUsername());
@@ -78,6 +80,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                     HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, hankoRequestId);
 
                     if (hankoRequest.isConfirmed()) {
+                        setAuthMethodCookie(loginMethod, context);
                         context.success();
                     } else {
                         logger.warn("Authentication failed for user " + context.getUser().getUsername());
@@ -100,6 +103,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                     HankoRequest hankoRequest = hankoClient.validateWebAuthn(config, hankoRequestId, hankoResponse);
 
                     if (hankoRequest.isConfirmed()) {
+                        setAuthMethodCookie(loginMethod, context);
                         context.success();
                     } else {
                         logger.warn("Authentication failed for user " + context.getUser().getUsername());
@@ -125,9 +129,16 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
 
                 logger.error("login successful");
 
+                setAuthMethodCookie(loginMethod, context);
                 context.success();
                 break;
         }
+    }
+
+    private void setAuthMethodCookie(LoginMethod loginMethod, AuthenticationFlowContext context) {
+        URI uri = context.getUriInfo().getBaseUriBuilder().path("realms").path(context.getRealm().getName()).build();
+        int maxCookieAge = 60 * 60 * 24 * 365; // 365 days
+        CookieHelper.addCookie("LOGIN_METHOD", loginMethod.name(), uri.getRawPath(), null, null, maxCookieAge, false, true);
     }
 
     @Override
@@ -213,6 +224,10 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         UserModel currentUser = authenticationFlowContext.getUser();
         String userId = userStore.getHankoUserId(currentUser);
 
+        boolean preferWebauthn = CookieHelper.getCookieValue("LOGIN_METHOD").contains(LoginMethod.WEBAUTHN.name());
+        boolean preferUaf = CookieHelper.getCookieValue("LOGIN_METHOD").contains(LoginMethod.UAF.name());
+        boolean preferPassword = CookieHelper.getCookieValue("LOGIN_METHOD").contains(LoginMethod.PASSWORD.name());
+
         if (userId == null || userId.trim().isEmpty()) {
             return LoginMethod.PASSWORD;
         } else {
@@ -220,7 +235,13 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
             boolean hasWebAuthnAuthenticator = hasWebAuthn(devices);
             boolean hasUafAuthenticator = hasUaf(devices);
 
-            if (hasWebAuthnAuthenticator) {
+            if (preferWebauthn && hasWebAuthnAuthenticator) {
+                return LoginMethod.WEBAUTHN;
+            } else if (preferUaf && hasUafAuthenticator) {
+                return LoginMethod.UAF;
+            } else if(preferPassword) {
+                return LoginMethod.PASSWORD;
+            } else if (hasWebAuthnAuthenticator) {
                 return LoginMethod.WEBAUTHN;
             } else if (hasUafAuthenticator) {
                 return LoginMethod.UAF;
