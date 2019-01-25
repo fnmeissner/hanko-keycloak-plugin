@@ -6,9 +6,9 @@ import io.hanko.client.java.models.ChangePassword;
 import io.hanko.client.java.models.HankoDevice;
 import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
+import io.hanko.plugin.keycloak.authentication.HankoCredentialProvider;
 import io.hanko.plugin.keycloak.common.HankoResourceProvider;
 import io.hanko.plugin.keycloak.common.HankoUtils;
-import io.hanko.plugin.keycloak.authentication.HankoCredentialProvider;
 import io.hanko.plugin.keycloak.serialization.ErrorMessage;
 import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
 import io.hanko.plugin.keycloak.serialization.HankoStatus;
@@ -25,10 +25,7 @@ import org.keycloak.theme.FreeMarkerUtil;
 import org.keycloak.theme.Theme;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -160,6 +157,11 @@ public class HankoProfileProvider extends HankoResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoRequest hankoRequest = hankoClient.validateWebAuthn(config, requestId, webAuthnResponse);
             Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
+            if(hankoRequest.isConfirmed()) {
+                URI uri = context.getUri().getBaseUriBuilder().path("realms").path(context.getRealm().getName()).build();
+                int maxCookieAge = 60 * 60 * 24 * 365; // 365 days
+                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", null, uri.getRawPath(), null, null, maxCookieAge, false, true));
+            }
             return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Error while waiting for Hanko request to finish. ", ex);
@@ -185,14 +187,18 @@ public class HankoProfileProvider extends HankoResourceProvider {
             HankoClientConfig config = HankoUtils.createConfig(session);
             HankoRequest hankoRequest = hankoClient.awaitConfirmation(config, requestId);
 
+            Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
+
             if (hankoRequest.isConfirmed()) {
                 UserCredentialModel credentials = new UserCredentialModel();
                 credentials.setType(HankoCredentialProvider.TYPE);
                 credentials.setValue(hankoUserId);
                 session.userCredentialManager().updateCredential(context.getRealm(), auth.getUser(), credentials);
+                URI uri = context.getUri().getBaseUriBuilder().path("realms").path(context.getRealm().getName()).build();
+                int maxCookieAge = 60 * 60 * 24 * 365; // 365 days
+                responseBuilder.cookie(new NewCookie("LOGIN_METHOD", null, uri.getRawPath(), null, null, maxCookieAge, false, true));
             }
 
-            Response.ResponseBuilder responseBuilder = Response.ok(hankoRequest);
             return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
         } catch (Exception ex) {
             String response = logAndFail("Could not request Hanko registration", ex);
