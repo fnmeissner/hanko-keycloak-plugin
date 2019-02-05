@@ -26,6 +26,8 @@ body {
   background-size: 100%, 170px;
   font-family: Montserrat, Arial, sans-serif;
   color: #222;
+  display: flex;
+  justify-content: center;
 }
 
 p {
@@ -36,6 +38,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 500px;
 }
 
 .login-pf-page .card-pf {
@@ -137,7 +140,7 @@ div.kc-logo-text span {
   flex-direction: row;
   height: 190px;
   align-items: center;
-} 
+}
 
 .imgwrapper {
   display: flex;
@@ -160,9 +163,9 @@ div.kc-logo-text span {
 }
 
 .or span {
-  background:#fff;
+  background: #fff;
   font-weight: 500;
-  padding:0 20px;
+  padding: 0 20px;
 }
 
 .alert {
