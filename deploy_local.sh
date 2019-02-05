@@ -17,3 +17,4 @@ cp themes/base/account/account-hanko.ftl ${KCBASE}/themes/base/account/account-h
 cp -r themes/keycloak/login/resources/js ${KCBASE}/themes/keycloak/login/resources
 cp -r themes/keycloak/account/resources/js ${KCBASE}/themes/keycloak/account/resources
 cp -r themes/hanko ${KCBASE}/themes
+cp -r themes/playground ${KCBASE}/themes
