@@ -1,7 +1,7 @@
 <#import "template.ftl" as layout>
 <@layout.registrationLayout displayInfo=social.displayInfo displayWide=(realm.password && social.providers??); section>
     <#if section = "header">
-        ${msg("doLogIn")}
+        ${msg("logInHeader")}
     <#elseif section = "form">
     <div id="kc-form" <#if realm.password && social.providers??>class="${properties.kcContentWrapperClass!}"</#if>>
       <div id="kc-form-wrapper" <#if realm.password && social.providers??>class="${properties.kcFormSocialAccountContentClass!} ${properties.kcFormSocialAccountClass!}"</#if>>
@@ -31,6 +31,12 @@
                             </div>
                         </#if>
                         </div>
+                        <div class="${properties.kcFormOptionsWrapperClass!}">
+                            <#if realm.resetPasswordAllowed>
+                                <span><a tabindex="5" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
+                            </#if>
+                        </div>
+
                   </div>
 
                   <div id="kc-form-buttons" class="${properties.kcFormGroupClass!}">
