@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "build-keycloak": "webpack --config webpack.keycloak.js",
+    "sass": "node-sass --output dist/ src/styles/main.scss",
+    "build-keycloak": "webpack --config webpack.keycloak.js && npm run sass",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -22,7 +23,8 @@
     "dotenv-webpack": "^1.5.7",
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "^4.0.0-beta.2",
-    "node-sass": "^4.9.4",
+    "ignore-loader": "^0.1.2",
+    "node-sass": "^4.11.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.2.2",

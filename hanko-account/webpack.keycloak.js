@@ -6,6 +6,14 @@ const HtmlPlugin = require('html-webpack-plugin')
 
 module.exports = merge(common, {
   mode: 'production',
+  module: {
+    rules: [
+      {
+        test: /\.scss$/,
+        use: 'ignore-loader'
+      }
+    ]
+  },
   optimization: {
     splitChunks: {
       chunks: 'all'

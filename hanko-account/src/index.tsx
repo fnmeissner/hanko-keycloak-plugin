@@ -6,7 +6,11 @@ import * as Keycloak from 'keycloak-js'
 
 import { NotLoggedIn } from './containers/NotLoggedIn'
 
-require('./styles/main.scss')
+const development = process.env.NODE_ENV !== 'production'
+
+if (development) {
+  require('./styles/main.scss')
+}
 
 const keycloakUrl =
   (window as any).keycloakUrl !== undefined
