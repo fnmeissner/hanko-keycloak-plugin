@@ -16,6 +16,9 @@ rm themes/keycloak/account/resources/js/*
 echo Copy new javascript files
 cp hanko-account/dist/* themes/keycloak/account/resources/js/
 
+echo Copy main.css
+cp hanko-account/dist/main.css themes/keycoak/account/css/main.css
+
 echo Delete old themes.zip
 rm themes.zip
 
