@@ -78,7 +78,7 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
         String username = inputData.getFirst(AuthenticationManager.FORM_USERNAME);
         if (username == null) {
             context.getEvent().error(Errors.USER_NOT_FOUND);
-            Response challengeResponse = invalidUser(context);
+            Response challengeResponse = challenge(context, Messages.INVALID_USER);
             context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
             return false;
         }
@@ -161,7 +161,7 @@ public class HankoFormAuthenticator extends AbstractUsernameFormAuthenticator im
         } else {
             context.getEvent().user(user);
             context.getEvent().error(Errors.INVALID_USER_CREDENTIALS);
-            Response challengeResponse = invalidCredentials(context);
+            Response challengeResponse = challenge(context, Messages.INVALID_USER);
             context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS, challengeResponse);
             context.clearUser();
             return false;

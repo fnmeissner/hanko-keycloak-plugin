@@ -41,6 +41,15 @@ public class HankoUsernameAuthenticator extends AbstractUsernameFormAuthenticato
         }
     }
 
+    protected Response challenge(AuthenticationFlowContext context, String error) {
+        LoginFormsProvider forms = context.form();
+        forms.setAttribute("login",  new LoginBean(context.getHttpRequest().getDecodedFormParameters()));
+        if (error != null) {
+            forms.setError(error, new Object[0]);
+        }
+        return forms.createForm("hanko-username.ftl");
+    }
+
     @Override
     public void action(AuthenticationFlowContext context) {
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
@@ -56,7 +65,7 @@ public class HankoUsernameAuthenticator extends AbstractUsernameFormAuthenticato
         String username = inputData.getFirst(AuthenticationManager.FORM_USERNAME);
         if (username == null) {
             context.getEvent().error(Errors.USER_NOT_FOUND);
-            Response challengeResponse = invalidUser(context);
+            Response challengeResponse = challenge(context, Messages.INVALID_USER);
             context.failureChallenge(AuthenticationFlowError.INVALID_USER, challengeResponse);
             return false;
         }
@@ -108,13 +117,6 @@ public class HankoUsernameAuthenticator extends AbstractUsernameFormAuthenticato
         context.success();
 
         return true;
-    }
-
-    @Override
-    protected Response invalidUser(AuthenticationFlowContext context) {
-        LoginFormsProvider forms = context.form();
-        forms.setAttribute("login",  new LoginBean(context.getHttpRequest().getDecodedFormParameters()));
-        return forms.setError(Messages.INVALID_USER).createForm("hanko-username.ftl");
     }
 
     @Override

@@ -19,13 +19,13 @@
       apt: name=openjdk-8-jdk state=present
     - name: Download Keycloak
       get_url: >
-        url=https://downloads.jboss.org/keycloak/4.5.0.Final/keycloak-4.5.0.Final.tar.gz
-        dest=/opt/keycloak-4.5.0.Final.tar.gz
+        url=https://downloads.jboss.org/keycloak/4.8.3.Final/keycloak-4.8.3.Final.tar.gz
+        dest=/opt/keycloak-4.8.3.Final.tar.gz
       register: keycloak_archive_file
     - name: Creates directory for Keycloak installation
       file: path=/opt state=directory
     - name: Unzip sdk tools
       unarchive:
-        src: "{{ keycloak_archive_file.dest }}"
+        src: '{{ keycloak_archive_file.dest }}'
         dest: /opt
         remote_src: yes

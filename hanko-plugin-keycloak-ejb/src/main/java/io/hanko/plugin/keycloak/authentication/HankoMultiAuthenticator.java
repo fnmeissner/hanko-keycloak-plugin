@@ -159,36 +159,6 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         }
     }
 
-    @Override
-    public boolean enabledUser(AuthenticationFlowContext context, UserModel user) {
-        if (!user.isEnabled()) {
-            context.getEvent().user(user);
-            context.getEvent().error(Errors.USER_DISABLED);
-            Response challengeResponse = disabledUser(context);
-            // this is not a failure so don't call failureChallenge.
-            //context.failureChallenge(AuthenticationFlowError.USER_DISABLED, challengeResponse);
-            context.forceChallenge(challengeResponse);
-            return false;
-        }
-        if (isTemporarilyDisabledByBruteForce(context, user)) return false;
-        return true;
-    }
-
-    private boolean isTemporarilyDisabledByBruteForce(AuthenticationFlowContext context, UserModel user) {
-        if (context.getRealm().isBruteForceProtected()) {
-            if (context.getProtector().isTemporarilyDisabled(context.getSession(), context.getRealm(), user)) {
-                context.getEvent().user(user);
-                context.getEvent().error(Errors.USER_TEMPORARILY_DISABLED);
-                Response challengeResponse = temporarilyDisabledUser(context);
-                // this is not a failure so don't call failureChallenge.
-                //context.failureChallenge(AuthenticationFlowError.USER_TEMPORARILY_DISABLED, challengeResponse);
-                context.forceChallenge(challengeResponse);
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void cancelLogin(AuthenticationFlowContext context) {
         context.clearUser();
         context.resetFlow();
