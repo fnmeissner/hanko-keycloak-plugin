@@ -9,6 +9,7 @@ import { AddWebAuthn } from '../components/AddWebAuthn'
 
 type AppState = {
   showAddHankoAuthenticator: boolean
+  showAddPlatformAuthenticator: boolean
   devices: Device[] | undefined
 }
 
@@ -28,12 +29,20 @@ export class App extends React.Component<AppProps, AppState> {
     super(props)
     this.state = {
       showAddHankoAuthenticator: false,
+      showAddPlatformAuthenticator: false,
       devices: undefined
     }
   }
 
   componentDidMount() {
     this.fetchDevices()
+    if (window.PublicKeyCredential) {
+      window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(
+        userIntent => {
+          this.setState({ showAddPlatformAuthenticator: userIntent })
+        }
+      )
+    }
   }
 
   showAddHankoAuthenticator = () => {
@@ -83,7 +92,11 @@ export class App extends React.Component<AppProps, AppState> {
     const username = jwt.name ? jwt.name : ''
     const email = jwt.email ? jwt.email : ''
 
-    const { showAddHankoAuthenticator, devices } = this.state
+    const {
+      showAddHankoAuthenticator,
+      showAddPlatformAuthenticator,
+      devices
+    } = this.state
 
     const urlParams = new URLSearchParams(window.location.search)
     const redirectParam = urlParams.get('redirectUrl')
@@ -157,13 +170,15 @@ export class App extends React.Component<AppProps, AppState> {
                   >
                     Add Security Key
                   </AddWebAuthn>
-                  <AddWebAuthn
-                    refetch={this.fetchDevices}
-                    keycloak={keycloak}
-                    type="platform"
-                  >
-                    Add Windows Hello
-                  </AddWebAuthn>
+                  {showAddPlatformAuthenticator ? (
+                    <AddWebAuthn
+                      refetch={this.fetchDevices}
+                      keycloak={keycloak}
+                      type="platform"
+                    >
+                      Add Windows Hello
+                    </AddWebAuthn>
+                  ) : null}
                 </div>
               )}
             </div>
