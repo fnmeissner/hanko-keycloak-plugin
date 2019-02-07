@@ -9,6 +9,7 @@ ol {
 $primary-color: rgb(250, 250, 250) !default;
 $background-color: #333 !default;
 $container-color: rgb(33, 33, 33) !default;
+$navbar-color: #212121 !default;
 
 %font-default {
   font-family: Montserrat, Arial, sans-serif;
@@ -160,7 +161,7 @@ h1 {
 
 .navigation-bar {
   display: flex;
-  background-color: #212121;
+  background-color: $navbar-color;
   height: 70px;
   padding-left: 31px;
   padding-right: 31px;
@@ -173,7 +174,7 @@ h1 {
 
 .navigation-bar-link {
   @extend %font-link;
-  color: white;
+  color: $primary-color;
   text-decoration: none;
 }
 
