@@ -11,6 +11,9 @@ $background-color: #333 !default;
 $container-color: rgb(33, 33, 33) !default;
 $navbar-color: #212121 !default;
 
+$primary-button-color: rgb(234, 89, 83) !default;
+$primary-button-font-color: #fff !default;
+
 %font-default {
   font-family: Montserrat, Arial, sans-serif;
   font-weight: 400;
@@ -127,9 +130,9 @@ table {
 
 button {
   @extend %font-default;
-  border: 1px solid rgb(234, 89, 83);
-  background-color: rgb(234, 89, 83);
-  color: $primary-color;
+  border: 1px solid $primary-button-color;
+  background-color: $primary-button-color;
+  color: $primary-button-font-color;
   border-radius: 3px;
   font-size: 16px;
   font-weight: 700;
