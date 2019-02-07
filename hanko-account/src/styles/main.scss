@@ -61,6 +61,7 @@ div#content {
   padding: 50px;
   display: flex;
   flex-direction: column;
+  margin-top: 50px;
 }
 
 div.container {
@@ -173,6 +174,7 @@ h1 {
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  position: fixed;
 }
 
 .navigation-bar-link {
