@@ -18,6 +18,8 @@ cp hanko-account/dist/* themes/keycloak/account/resources/js/
 
 echo Copy main.css
 cp hanko-account/dist/main.css themes/keycloak/account/resources/css/main.css
+mkdir -p  themes/playground/account/resources/css
+cp hanko-account/dist/main.css themes/playground/account/resources/css/main.css
 
 echo Delete old themes.zip
 rm themes.zip

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "sass": "node-sass --output dist/ src/styles/main.scss",
+    "sass": "node-sass --output dist/ src/styles",
     "build-keycloak": "webpack --config webpack.keycloak.js && npm run sass",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

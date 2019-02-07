@@ -6,9 +6,9 @@ ol {
   padding: 0;
 }
 
-$primary-color: rgb(250, 250, 250);
-$background-color: #333;
-$container-color: rgb(33, 33, 33);
+$primary-color: rgb(250, 250, 250) !default;
+$background-color: #333 !default;
+$container-color: rgb(33, 33, 33) !default;
 
 %font-default {
   font-family: Montserrat, Arial, sans-serif;
@@ -194,10 +194,9 @@ h1 {
   @extend %font-header;
   font-family: Montserrat, sans-serif;
   -moz-osx-font-smoothing: grayscale;
-  color: rgb(250, 250, 250);
+  color: $primary-color;
   font-weight: 700;
   font-size: 20px;
-  color: white;
   text-decoration: none;
   line-height: 36px;
 }
