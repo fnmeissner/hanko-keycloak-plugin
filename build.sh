@@ -12,12 +12,14 @@ cp hanko-account/dist/index.html themes/base/account/account-hanko.ftl
 
 echo Remove old javascript files
 rm themes/keycloak/account/resources/js/*
-rm themes/playground/account/resources/js/*
+rm themes/playground/account/resources/js/*.js
+rm themes/playground/account/resources/js/*.png
 
 echo Copy new javascript files
 cp hanko-account/dist/* themes/keycloak/account/resources/js/
-mkdir -p themes/playground/account/resources/js
-cp hanko-account/dist/* themes/playground/account/resources/js/
+cp hanko-account/dist/*.js themes/playground/account/resources/js/
+cp hanko-account/dist/*.png themes/playground/account/resources/js/
+
 
 echo Copy main.css
 cp hanko-account/dist/main.css themes/keycloak/account/resources/css/main.css

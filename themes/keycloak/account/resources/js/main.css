@@ -41,7 +41,8 @@ div#content {
   width: 100%;
   padding: 50px;
   display: flex;
-  flex-direction: column; }
+  flex-direction: column;
+  margin-top: 50px; }
 
 div.container {
   background-color: #212121;
@@ -95,7 +96,7 @@ table {
 button {
   border: 1px solid #ea5953;
   background-color: #ea5953;
-  color: #fafafa;
+  color: #fff;
   border-radius: 3px;
   font-size: 16px;
   font-weight: 700;
@@ -111,7 +112,7 @@ input {
   outline: currentcolor none 0px;
   padding-bottom: 10px;
   padding-top: 7px;
-  color: white; }
+  color: #fafafa; }
 
 h1 {
   margin-bottom: 25px; }
@@ -126,10 +127,12 @@ h1 {
   align-content: center;
   align-items: center;
   width: 100%;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  position: fixed;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
 
 .navigation-bar-link {
-  color: white;
+  color: #fafafa;
   text-decoration: none; }
 
 .button-list {
