@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="10px" viewBox="0 0 8 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>ic_arrow_right_f</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Overview" transform="translate(-196.000000, -31.000000)" fill="#FAFAFA">
+            <g id="Breadcrump_1-Copy" transform="translate(196.000000, 26.000000)">
+                <g id="ic_arrow_right_f" transform="translate(0.000000, 5.000000)">
+                    <path d="M1.206,9.80333333 L1.2056,9.80333333 C0.541233668,9.80350262 0.00198446203,9.39633591 -3.55271368e-15,8.8930303 L-3.55271368e-15,0.91030303 C0.00198446203,0.40699742 0.541233668,-0.000169290725 1.2056,1.77635684e-15 C1.5216,1.77635684e-15 1.8208,0.0951515152 2.0484,0.267575758 L7.3172,4.25878788 C7.78526317,4.61402996 7.78526317,5.18930337 7.3172,5.54454545 L2.0484,9.53575758 C1.82601959,9.70657833 1.52269468,9.80292495 1.206,9.80333333" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -29,8 +29,8 @@ h1, .navbar-header {
 
 body {
   font: 100% Montserrat, Arial, sans-serif;
-  color: #fafafa;
-  background-color: #333; }
+  color: #000;
+  background-color: #fff; }
 
 div#root {
   display: flex;
@@ -44,7 +44,7 @@ div#content {
   flex-direction: column; }
 
 div.container {
-  background-color: #212121;
+  background-color: #fff;
   border-radius: 3px;
   margin-bottom: 20px;
   padding: 50px; }
@@ -95,7 +95,7 @@ table {
 button {
   border: 1px solid #ea5953;
   background-color: #ea5953;
-  color: #fafafa;
+  color: #000;
   border-radius: 3px;
   font-size: 16px;
   font-weight: 700;
@@ -145,7 +145,7 @@ h1 {
 .navbar-header {
   font-family: Montserrat, sans-serif;
   -moz-osx-font-smoothing: grayscale;
-  color: #fafafa;
+  color: #000;
   font-weight: 700;
   font-size: 20px;
   text-decoration: none;
