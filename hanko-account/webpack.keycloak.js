@@ -23,7 +23,7 @@ module.exports = merge(common, {
     filename: 'index.[hash].js',
     chunkFilename: '[id].[hash].js',
     path: path.join(__dirname, 'dist'),
-    publicPath: '/auth/resources/4.8.3.final/account/keycloak/js/'
+    publicPath: '${url.resourcesPath}/js/'
   },
   plugins: [
     new Dotenv({ path: path.join(__dirname, '.env') }),
