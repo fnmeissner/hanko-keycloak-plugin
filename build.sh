@@ -16,7 +16,8 @@ rm themes/playground/account/resources/js/*
 
 echo Copy new javascript files
 cp hanko-account/dist/* themes/keycloak/account/resources/js/
-cp hanko-account/dist/* themes/hanko/account/resources/js/
+mkdir -p themes/playground/account/resources/js
+cp hanko-account/dist/* themes/playground/account/resources/js/
 
 echo Copy main.css
 cp hanko-account/dist/main.css themes/keycloak/account/resources/css/main.css
