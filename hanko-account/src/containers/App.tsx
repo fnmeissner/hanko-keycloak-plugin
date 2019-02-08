@@ -106,7 +106,7 @@ export class App extends React.Component<AppProps, AppState> {
     const logo =
       process.env.NODE_ENV !== 'production'
         ? (require('../images/logo.png') as string)
-        : `${__webpack_public_path__}/../img/logo.png`
+        : `${__webpack_public_path__}../img/logo.png`
 
     return (
       <ContentWrapper>
