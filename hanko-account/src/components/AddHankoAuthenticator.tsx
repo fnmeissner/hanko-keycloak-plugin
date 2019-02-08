@@ -79,7 +79,9 @@ export class AddHankoAuthenticator extends React.Component<
             <img src={`${qrCode}?fg=0&bg=ffffff`} className="fadein" />
           </div>
         ) : null}
-        <button onClick={this.cancel}>cancel</button>
+        <div className="pull-right">
+          <button onClick={this.cancel}>Cancel</button>
+        </div>
       </div>
     )
   }
