@@ -82,7 +82,7 @@ export class ChangePasswordComponent extends React.Component<
           />
         </div>
         <div className="pull-right">
-          <button onClick={this.changePassword}>change</button>
+          <button onClick={this.changePassword}>Change</button>
         </div>
       </div>
     )
