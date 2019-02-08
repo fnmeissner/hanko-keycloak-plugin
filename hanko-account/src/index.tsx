@@ -28,6 +28,8 @@ const keycloak = Keycloak({
   clientId: 'hanko-account'
 })
 
+console.log('baseUrl: ', window.resourceBaseUrl)
+
 if (window.resourceBaseUrl) {
   window.__webpack_public_path__ = window.resourceBaseUrl
 }
