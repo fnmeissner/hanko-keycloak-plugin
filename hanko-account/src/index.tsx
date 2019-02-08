@@ -28,6 +28,10 @@ const keycloak = Keycloak({
   clientId: 'hanko-account'
 })
 
+if (window.resourceBaseUrl) {
+  window.__webpack_public_path__ = window.resourceBaseUrl
+}
+
 keycloak
   .init({ onLoad: 'login-required' })
   .success(_ => {
