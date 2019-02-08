@@ -23,6 +23,8 @@ export class DeviceComponent extends React.Component<DeviceProps> {
     ).then(_ => {
       deviceDeletedHandler()
     })
+
+    return false
   }
 
   render() {
@@ -35,7 +37,9 @@ export class DeviceComponent extends React.Component<DeviceProps> {
         <td>{moment(device.createdAt).fromNow()}</td>
         <td>{moment(device.lastUsage).fromNow()}</td>
         <td>
-          <button onClick={this.deregister}>deregister</button>
+          <a href="#" onClick={this.deregister}>
+            deregister
+          </a>
         </td>
       </tr>
     )
