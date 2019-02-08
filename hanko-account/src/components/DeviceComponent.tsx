@@ -38,7 +38,7 @@ export class DeviceComponent extends React.Component<DeviceProps> {
         <td>{moment(device.lastUsage).fromNow()}</td>
         <td>
           <a href="#" onClick={this.deregister}>
-            deregister
+            delete
           </a>
         </td>
       </tr>

@@ -74,8 +74,8 @@ div#content {
 div.container {
   background-color: $container-color;
   border-radius: 3px;
-  margin-bottom: 20px;
-  padding: 50px;
+  margin-bottom: 48px;
+  padding: 20px 30px 30px;
 }
 
 div.center {
@@ -161,6 +161,12 @@ input {
   color: $primary-color;
 }
 
+thead {
+  tr {
+    text-align: left;
+  }
+}
+
 label {
   @extend %font-label;
 }
@@ -224,4 +230,9 @@ h1 {
 .back-arrow {
   transform: rotate(180deg);
   margin-right: 10px;
+}
+
+.pull-right {
+  display: flex;
+  justify-content: flex-end;
 }

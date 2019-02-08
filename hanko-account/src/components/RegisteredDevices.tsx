@@ -28,7 +28,7 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
             <th>Type</th>
             <th>Created At</th>
             <th>Last Activity</th>
-            <th />
+            <th>Manage</th>
           </tr>
         </thead>
         <tbody>

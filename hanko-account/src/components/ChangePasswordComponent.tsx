@@ -81,7 +81,9 @@ export class ChangePasswordComponent extends React.Component<
             onChange={this.passwordValidationChanged}
           />
         </div>
-        <button onClick={this.changePassword}>change</button>
+        <div className="pull-right">
+          <button onClick={this.changePassword}>change</button>
+        </div>
       </div>
     )
   }

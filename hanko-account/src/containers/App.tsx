@@ -160,7 +160,7 @@ export class App extends React.Component<AppProps, AppState> {
                   completionHandler={this.completionHandler}
                 />
               ) : (
-                <div className="button-list">
+                <div className="button-list pull-right">
                   <button onClick={this.showAddHankoAuthenticator}>
                     Add Hanko Authenticator
                   </button>
