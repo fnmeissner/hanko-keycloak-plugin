@@ -1,3 +1,5 @@
+require('./utils/publicPath')
+
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { App } from './containers/App'
@@ -27,13 +29,6 @@ const keycloak = Keycloak({
   realm: realm,
   clientId: 'hanko-account'
 })
-
-console.log('baseUrl: ', window.resourceBaseUrl)
-
-if (window.resourceBaseUrl) {
-  console.log('setting baseUrl to:', window.resourceBaseUrl)
-  window.__webpack_public_path__ = window.resourceBaseUrl
-}
 
 keycloak
   .init({ onLoad: 'login-required' })
