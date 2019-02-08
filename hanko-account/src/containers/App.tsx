@@ -102,10 +102,11 @@ export class App extends React.Component<AppProps, AppState> {
     const redirectParam = urlParams.get('redirectUrl')
     const redirectNameParam = urlParams.get('redirectName')
     const redirectLinkText = redirectNameParam ? redirectNameParam : 'return'
-    const logo = require('../images/logo.png') as string
 
-    // const publicKeyCredential = (window as any).PublicKeyCredential
-    // const isPlatformAuthenticatorAvailable = publicKeyCredential ? publicKeyCredential.
+    const logo =
+      process.env.NODE_ENV !== 'production'
+        ? (require('../images/logo.png') as string)
+        : `${__webpack_public_path__}/../img/logo.png`
 
     return (
       <ContentWrapper>
