@@ -32,12 +32,18 @@ body {
   color: #000;
   background-color: #f0f0f0; }
 
+a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 600;
+  font-family: Montserrat, Arial, sans-serif; }
+
 div#root {
   display: flex;
   justify-content: center; }
 
 div#content {
-  max-width: 1400px;
+  max-width: 900px;
   width: 100%;
   padding: 50px;
   display: flex;
@@ -47,8 +53,8 @@ div#content {
 div.container {
   background-color: #fff;
   border-radius: 3px;
-  margin-bottom: 20px;
-  padding: 50px; }
+  margin-bottom: 48px;
+  padding: 20px 30px 30px; }
 
 div.center {
   display: flex;
@@ -82,7 +88,7 @@ table {
   width: 100%; }
   table td,
   table th {
-    padding: 10px; }
+    padding: 10px 10px 10px 0; }
 
 @keyframes fadein {
   from {
@@ -114,6 +120,9 @@ input {
   padding-top: 7px;
   color: #000; }
 
+thead tr {
+  text-align: left; }
+
 h1 {
   margin-bottom: 25px; }
 
@@ -138,7 +147,7 @@ h1 {
 .button-list {
   display: flex; }
   .button-list button {
-    margin-right: 20px; }
+    margin-left: 20px; }
 
 .navbar-logo {
   width: 36px;
@@ -162,3 +171,8 @@ h1 {
 .back-arrow {
   transform: rotate(180deg);
   margin-right: 10px; }
+
+.pull-right {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%; }
