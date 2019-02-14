@@ -1,3 +1,0 @@
-<html><head><title>Manage Account</title><meta charset="utf-8"><script>window.apiurl = "${properties.keycloakUrl}";
-    window.url = "${properties.keycloakUrl}";
-    window.realmId = "${properties.keycloakRealmId}";</script></head><body style="height: 100%"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div><script src="/auth/resources/4.5.0.final/account/keycloak/js/1.5a65337d9745ce9a28a2.js"></script><script src="/auth/resources/4.5.0.final/account/keycloak/js/index.5a65337d9745ce9a28a2.js"></script></body></html>
