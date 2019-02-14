@@ -6,11 +6,13 @@ For more information about Keycloak, please visit the [Keycloak homepage](https:
 
 For more information about Hanko, please visit the [Hanko homepage](https://hanko.io/).
 
+You can try passwordless authentication with Hanko at our [Hanko Playground](https://playground.hanko.io/).
+
 ## Features
 
-- Login with either password, Hanko Authenticator or WebAuthn (FIDO2)
-- Account-page to register and deregister a Hanko Authenticator
-- REST endpoints to allow registration and deregistration of a Hanko Authenticator
+- Login with either password, Hanko Authenticator (FIDO UAF) or WebAuthn (FIDO U2F & FIDO2).
+- Account-page to register and deregister a Hanko Authenticator or any FIDO U2F or FIDO2 authenticator via WebAuthn.
+- REST endpoints to allow registration and deregistration of a Hanko Authenticator or WebAuthn device.
 
 ## Architecture / Context
 
@@ -18,33 +20,36 @@ For more information about Hanko, please visit the [Hanko homepage](https://hank
 
 ## Compatibility
 
-This plugin is currently developed for Keycloak 4.1.0.Final.
+The latest version of this plugin (v0.2) has been tested with Keycloak 4.8.3.Final and should be backwards compatible with Keycloak version >= 4.6.0.Final.
+
+For Keycloak version 4.5.0.Final and earlier, you can use the plugin version v0.1.3.
 
 ## Installation / Update
 
-1. Download the latest version from the [releases page](https://github.com/teamhanko/hanko-keycloak-plugin/releases).
-2. Copy the ear file into the `standalone/deployments` directory of your Keycloaks root directory.
-3. Copy templates.zip (or themes.zip, depending on the version) to the root directory of you Keycloak server.
-4. Unzip templates.zip (or themes.zip, depending on the version) by running `unzip templates.zip`
+1. Download the latest version from the [releases page](https://github.com/teamhanko/hanko-keycloak-plugin/releases) and place the files at your keycloak root directory (for example /opt/jboss/keycloak).
+2. Install the plugin by running `./bin/jboss-cli.sh --command="module add --name=hanko-plugin-keycloak-ejb --resources=./hanko-plugin-keycloak.jar --dependencies=org.keycloak.keycloak-common,org.keycloak.keycloak-core,org.keycloak.keycloak-services,org.keycloak.keycloak-model-jpa,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,javax.ws.rs.api,javax.persistence.api,org.hibernate,org.javassist,org.liquibase,com.fasterxml.jackson.core.jackson-core,com.fasterxml.jackson.core.jackson-databind,com.fasterxml.jackson.core.jackson-annotations,org.jboss.resteasy.resteasy-jaxrs,org.jboss.logging,org.apache.httpcomponents,org.apache.commons.codec"`
+3. Unzip themes.zip (or templates.zip, depending on the version) by running `unzip -o themes.zip -d .`
 
 ## Configuration
 
 1. Login to your Keycloak administration console.
-2. Goto configuration section **Authentication**.
-3. Select the **Browser** authentication flow.
-4. Click **copy** in the top right corner of the table.
+2. Goto configuration section **Realm Settings**, open the Themes tab and select either `hanko` (dark) or `playground` (light) as your **login-theme** and your **account-theme**.
+   ![Select your theme](./docs/resources/change-login-theme.png)
+3. Goto configuration section **Authentication**.
+4. Select the **Browser** authentication flow.
+5. Click **copy** in the top right corner of the table.
    ![Copy browser flow](./docs/resources/copy-browser-flow.png)
-5. Give the new flow a meaningfull name, for example **Browser flow with Hanko**.
+6. Give the new flow a meaningfull name, for example **Browser flow with Hanko**.
    ![Rename new flow](./docs/resources/rename-copy-of-flow.png)
-6. Delete the action **Username Password Form**.
-7. Delete the action **OTP Form**.
+7. Delete the action **Username Password Form**.
+8. Delete the action **OTP Form**.
    ![Delete actions](./docs/resources/delete-actions.png)
-8. Add the execution **Hanko Authenticator** to the forms flow and mark it as **required**.
+9. Add the execution **Hanko Username Authenticator** to the forms flow and mark it as **required**.
    ![Add Hanko actions](./docs/resources/add-execution-flows.png)
-9. Add the execution **Hanko UAF Auth** and mark it as **optional**.
-10. Open the configuration of the **Hanko UAF Auth** flow by clicking **Actions** -> **Config** and insert your apikey and apikey ID.
-    ![Open UAF Config](./docs/resources/open-uaf-config.png)
-11. Open the **Bindings** tab and change the **Browser Flow** to **Browser flow with Hanko**.
+10. Add the execution **Hanko Multi Authenticator** and mark it as **required**.
+11. Open the configuration of the **Hanko Multi Authenticator** flow by clicking **Actions** -> **Config** and insert your apikey ID and apikey secret.
+    ![Open UAF Config](./docs/resources/open-hanko-config.png)
+12. Open the **Bindings** tab and change the **Browser Flow** to **Browser flow with Hanko**.
     ![Change Binding](./docs/resources/change-binding.png)
 
 ## Usage
@@ -65,7 +70,7 @@ As a fallback, you can still login with your password.
 ### Account page
 
 Before you can use the provided account page, you have to add a **Client** to your realm
-**(Note: If you use another realm thean master, you have to replace master with your name in the URLs below)**:
+**(Note: If you use another realm than master, you have to replace master with your name in the URLs below)**:
 
 1. Login to your Keycloak administration console.
 2. Goto configuration section **Clients**.
@@ -75,6 +80,8 @@ Before you can use the provided account page, you have to add a **Client** to yo
 5. In the client configuration, add **/auth/realms/master/hanko** as Web Origin.
    ![Configure hanko-account client](./docs/resources/configure-hanko-account-client.png)
 6. Save the hanko-account client configuration.
+7. Goto configuration section **Realm Settings**, open the Themes tab and select either `hanko` (dark) or `playground` (light) as your **account-theme**.
+   ![Select your theme](./docs/resources/change-login-theme.png)
 
 Now you can register and deregister a Hanko Authenticator by visiting the path `/auth/realms/master/hanko/status` at your Keycloak`s root-url.
 
