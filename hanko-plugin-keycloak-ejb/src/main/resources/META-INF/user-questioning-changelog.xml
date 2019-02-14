@@ -5,31 +5,31 @@
     <changeSet author="erik.mulder@docdatapayments.com" id="example-1.0">
 
         <createTable tableName="USER_QUESTIONING_REQUEST">
-            <column name="ID" type="VARCHAR(256)">
+            <column name="ID" type="NVARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CLIENT_NOTIFICATION_TOKEN" type="VARCHAR(256)">
+            <column name="CLIENT_NOTIFICATION_TOKEN" type="NVARCHAR(256)">
             </column>
-            <column name="USER_ID" type="VARCHAR(256)">
+            <column name="USER_ID" type="NVARCHAR(256)">
             </column>
-            <column name="USER_ID_TYPE" type="VARCHAR(256)">
+            <column name="USER_ID_TYPE" type="NVARCHAR(256)">
             </column>
-            <column name="QUESTION_TO_DISPLAY" type="VARCHAR(256)">
+            <column name="QUESTION_TO_DISPLAY" type="NVARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="STATEMENTS_TO_DISPLAY" type="VARCHAR(256)">
+            <column name="STATEMENTS_TO_DISPLAY" type="NVARCHAR(256)">
                 <constraints nullable="false"/>
             </column>
-            <column name="WISHED_AMR" type="VARCHAR(256)">
+            <column name="WISHED_AMR" type="NVARCHAR(256)">
             </column>
-            <column name="WISHED_ACR" type="VARCHAR(256)">
+            <column name="WISHED_ACR" type="NVARCHAR(256)">
             </column>
-            <column name="HANKO_ID" type="VARCHAR(256)">
+            <column name="HANKO_ID" type="NVARCHAR(256)">
             </column>
             <column name="IS_PENDING" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="USER_STATEMENT_TOKEN" type="VARCHAR">
+            <column name="USER_STATEMENT_TOKEN" type="NVARCHAR(4000)">
             </column>
         </createTable>
 
