@@ -10,7 +10,7 @@ build artifacts:
     - shell
   artifacts:
     paths:
-      - ./themes.zip
+      - ./dist/themes.zip
       - ./hanko-plugin-keycloak-ear/target/hanko-plugin-keycloak.ear
       - ./hanko-plugin-keycloak-ejb/target/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar
     expire_in: 1 week
@@ -30,8 +30,8 @@ deploy develop:
     - git clone git@gitlab.com:hanko/hanko-infrastructure-keycloak.git
     - cd hanko-infrastructure-keycloak
     - git checkout master
-    - cp ../themes.zip hanko-plugin/themes.zip
-    - cp ../hanko-plugin-keycloak-ejb/target/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar hanko-plugin/hanko-plugin-keycloak.jar
+    - cp ../dist/themes.zip hanko-plugin/themes.zip
+    - cp ../dist/hanko-plugin-keycloak-ejb/target/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar hanko-plugin/hanko-plugin-keycloak.jar
     - git add .
     - git commit -m "[hanko-keycloak-plugin] update develop version to ${CI_COMMIT_SHA}"
     - git push origin master
