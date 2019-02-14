@@ -31,7 +31,7 @@ deploy develop:
     - cd hanko-infrastructure-keycloak
     - git checkout master
     - cp ../dist/themes.zip hanko-plugin/themes.zip
-    - cp ../dist/hanko-plugin-keycloak-ejb/target/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar hanko-plugin/hanko-plugin-keycloak.jar
+    - cp ../hanko-plugin-keycloak-ejb/target/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar hanko-plugin/hanko-plugin-keycloak.jar
     - git add .
     - git commit -m "[hanko-keycloak-plugin] update develop version to ${CI_COMMIT_SHA}"
     - git push origin master
