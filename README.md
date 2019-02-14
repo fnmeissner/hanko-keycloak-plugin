@@ -192,14 +192,10 @@ cd hanko-keycloak-plugin
 Build the plugin by running:
 
 ```
-mvn package
+./build.sh
 ```
 
-Zip the themes by running:
-
-```
-zip -r themes.zip themes
-```
+The themes archive as well as the plugin jar will be in `./dist`.
 
 ## Testing with Vagrant
 
