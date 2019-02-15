@@ -24,6 +24,8 @@ The latest version of this plugin (v0.2) has been tested with Keycloak 4.8.3.Fin
 
 For Keycloak version 4.5.0.Final and earlier, you can use the plugin version v0.1.3.
 
+You can compile the plugin for other releases by setting the Keycloak version in `hanko-plugin-keycloak-ejb/pom.xml` and in `pom.xml`. For more information regarding the compilation, please check chapter [Building](#building).
+
 ## Installation / Update
 
 1. Download the latest version from the [releases page](https://github.com/teamhanko/hanko-keycloak-plugin/releases) and place the files at your keycloak root directory (for example /opt/jboss/keycloak).
