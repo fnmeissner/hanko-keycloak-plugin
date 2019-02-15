@@ -199,7 +199,7 @@ The themes archive as well as the plugin jar will be in `./dist`.
 
 ## Testing with Vagrant
 
-You can use the vagrant to create a development or test environment with pre-installed keycloak 4.1.0.
+You can use the vagrant to create a development or test environment with pre-installed keycloak 4.8.3.
 
 You need the vagrant scp plugin:
 
@@ -211,11 +211,11 @@ vagrant plugin install vagrant-scp
 git clone https://github.com/teamhanko/hanko-keycloak-plugin.git
 cd hanko-keycloak-plugin
 vagrant up
-./deploy_local.sh
+./deploy_vagrant.sh
 vagrant ssh
-cd /opt/keycloak-4.1.0.Final
+cd /opt/keycloak-4.8.3.Final
 ./bin/add-user-keycloak.sh -r master -u admin -p admin
-./bin/standalone.sh -b 10.0.2.15
+./bin/standalone.sh -b 0.0.0.0
 ```
 
 You should now be able to login to the admin console at https://localhost:8443/ with username admin and password admin.

@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-mvn package
-vagrant scp hanko-plugin-keycloak-ear/target/hanko-plugin-keycloak.ear :/opt/keycloak-4.8.3.Final/standalone/deployments/hanko-plugin-keycloak.ear
-vagrant scp themes/base/login/hanko-multi-login.ftl :/opt/keycloak-4.8.3.Final/themes/base/login/hanko-multi-login.ftl
-vagrant scp themes/base/login/hanko-multi-login-links.ftl :/opt/keycloak-4.8.3.Final/themes/base/login/hanko-multi-login-links.ftl
-vagrant scp themes/base/login/hanko-username.ftl :/opt/keycloak-4.8.3.Final/themes/base/login/hanko-username.ftl
-vagrant scp themes/base/login/login-hanko.ftl :/opt/keycloak-4.8.3.Final/themes/base/login/login-hanko.ftl
-vagrant scp themes/base/account/account-hanko.ftl :/opt/keycloak-4.8.3.Final/themes/base/account/account-hanko.ftl
-vagrant scp themes/keycloak/login/resources/img/login-hanko.png :/opt/keycloak-4.8.3.Final/themes/keycloak/login/resources/img/login-hanko.png
-vagrant scp themes/keycloak/login/resources/js :/opt/keycloak-4.8.3.Final/themes/keycloak/login/resources
-vagrant scp themes/keycloak/account/resources/js :/opt/keycloak-4.8.3.Final/themes/keycloak/account/resources
-vagrant scp themes/hanko :/opt/keycloak-4.8.3.Final/themes
+set -e
+
+./build.sh
+
+vagrant scp dist/hanko-plugin-keycloak-ejb-0.2-SNAPSHOT.jar :/opt/keycloak-4.8.3.Final/hanko-plugin-keycloak.jar
+vagrant scp dist/themes.zip :/opt/keycloak-4.8.3.Final/themes.zip
+vagrant ssh -c 'cd /opt/keycloak-4.8.3.Final; ./bin/jboss-cli.sh --command="module remove --name=hanko-plugin-keycloak-ejb" || true; ./bin/jboss-cli.sh --command="module add --name=hanko-plugin-keycloak-ejb --resources=./hanko-plugin-keycloak.jar --dependencies=org.keycloak.keycloak-common,org.keycloak.keycloak-core,org.keycloak.keycloak-services,org.keycloak.keycloak-model-jpa,org.keycloak.keycloak-server-spi,org.keycloak.keycloak-server-spi-private,javax.ws.rs.api,javax.persistence.api,org.hibernate,org.javassist,org.liquibase,com.fasterxml.jackson.core.jackson-core,com.fasterxml.jackson.core.jackson-databind,com.fasterxml.jackson.core.jackson-annotations,org.jboss.resteasy.resteasy-jaxrs,org.jboss.logging,org.apache.httpcomponents,org.apache.commons.codec"; unzip -o themes.zip -d .'

@@ -17,6 +17,8 @@
       setup:
     - name: install openjdk 8
       apt: name=openjdk-8-jdk state=present
+    - name: install unzip
+      apt: name=unzip state=present
     - name: Download Keycloak
       get_url: >
         url=https://downloads.jboss.org/keycloak/4.8.3.Final/keycloak-4.8.3.Final.tar.gz
