@@ -82,7 +82,7 @@ public class HankoUtils {
     static Boolean getRequires2FA(KeycloakSession session) throws HankoConfigurationException {
         String value = getNullableConfigValue(session, CONFIG_REQUIRE_2FA, "Requires 2FA");
         if(value == null) {
-            return true;
+            return false;
         } else {
             return Boolean.parseBoolean(value);
         }

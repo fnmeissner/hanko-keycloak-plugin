@@ -8,12 +8,10 @@ import io.hanko.client.java.models.HankoRegistrationRequest;
 import io.hanko.client.java.models.HankoRequest;
 import io.hanko.plugin.keycloak.authentication.HankoCredentialProvider;
 import io.hanko.plugin.keycloak.authentication.HankoMultiAuthenticator;
+import io.hanko.plugin.keycloak.common.HankoConfigurationException;
 import io.hanko.plugin.keycloak.common.HankoResourceProvider;
 import io.hanko.plugin.keycloak.common.HankoUtils;
-import io.hanko.plugin.keycloak.serialization.ErrorMessage;
-import io.hanko.plugin.keycloak.serialization.HankoRegistrationChallenge;
-import io.hanko.plugin.keycloak.serialization.HankoStatus;
-import io.hanko.plugin.keycloak.serialization.WebAuthnResponse;
+import io.hanko.plugin.keycloak.serialization.*;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.forms.account.freemarker.model.RealmBean;
 import org.keycloak.forms.account.freemarker.model.UrlBean;
@@ -273,11 +271,16 @@ public class HankoProfileProvider extends HankoResourceProvider {
                 logger.warn("Failed to load properties", e);
             }
 
+            HankoClientConfig config = HankoUtils.createConfig(session);
+
+
             attributes.put("realm", new RealmBean(context.getRealm()));
             attributes.put("keycloakUrl", baseUri);
             attributes.put("keycloakRealm", context.getRealm().getName());
             attributes.put("keycloakRealmId", context.getRealm().getId());
             attributes.put("keycloakClientId", "hanko-account");
+            attributes.put("requires2fa", config.getRequries2fa().toString());
+
             attributes.put("url", new UrlBean(session.getContext().getRealm(), theme, baseUri, baseQueryUri, uriInfo.getRequestUri(), stateChecker));
 
             if (auth != null && auth.getUser() != null) {
@@ -290,6 +293,9 @@ public class HankoProfileProvider extends HankoResourceProvider {
             logger.error("Failed to process template", e);
         } catch (IOException e) {
             logger.error("Failed to load theme", e);
+        } catch (HankoConfigurationException e) {
+            logger.error("Failed to load hanko config",e);
+            throw new RuntimeException(e);
         }
 
         return "";
@@ -381,6 +387,21 @@ public class HankoProfileProvider extends HankoResourceProvider {
 
         Response.ResponseBuilder responseBuilder = Response.ok();
         return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
+    }
+
+    @GET
+    @Path("config")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getConfig() {
+        try {
+            HankoClientConfig config = HankoUtils.createConfig(session);
+            HankoRealmConfig realmConfig = new HankoRealmConfig(config.getRequries2fa());
+            Response.ResponseBuilder responseBuilder = Response.ok(realmConfig);
+            return HankoUtils.withCorsNoCache(responseBuilder, "POST", this);
+        } catch (Exception ex) {
+            String response = logAndFail("Could not get config", ex);
+            return withError(response, Response.Status.INTERNAL_SERVER_ERROR, "GET");
+        }
     }
 
     private Response withError(String error, Response.Status status, String method) {

@@ -17,12 +17,14 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
 
   render() {
     const { devices, keycloak, deviceDeletedHandler } = this.props
-    const confirmDeregistration = devices.length === 1
+    const confirmDeregistration = window.requires2fa
+      ? window.requires2fa === 'true' && devices.length === 1
+      : false
     // const { keycloak, deviceDeletedHandler } = this.props
     // const devices: Device[] = []
 
     if (devices.length === 0)
-      return (
+      return window.requires2fa === 'true' ? (
         <div className="warning">
           <h3>Please register a 2nd factor now!</h3>
           <p>
@@ -30,6 +32,8 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
             you cannot login anymore.
           </p>
         </div>
+      ) : (
+        <div>No devices registered.</div>
       )
 
     return (
