@@ -56,6 +56,16 @@ You can compile the plugin for other releases by setting the Keycloak version in
     ![Open UAF Config](./docs/resources/open-hanko-config.png)
 12. Open the **Bindings** tab and change the **Browser Flow** to **Browser flow with Hanko**.
     ![Change Binding](./docs/resources/change-binding.png)
+    
+### 2 Factor Authentication
+
+You can configure a realm to require all users to authenticate with two factors (2FA).
+When 2FA is enabled, users can authenticate either using the Hanko Authenticator or by entering their password and providing a registered WebAuthn device.
+
+**Warning: Don't lockout the admin user. After enabling 2FA you can only login if you have a FIDO device registered.**
+
+You can change the configuration by opening the configuration for the Hanko Multi Authenticator (see above).
+
 
 ## Usage
 
