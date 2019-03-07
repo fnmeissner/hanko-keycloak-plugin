@@ -11,7 +11,7 @@ import { NotLoggedIn } from './containers/NotLoggedIn'
 const development = process.env.NODE_ENV !== 'production'
 
 if (development) {
-  require('./styles/main.scss')
+  require('./styles/playground.scss')
 }
 
 const keycloakUrl =

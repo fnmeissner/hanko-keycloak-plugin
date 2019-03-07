@@ -13,6 +13,7 @@ $navbar-color: #212121 !default;
 
 $primary-button-color: rgb(234, 89, 83) !default;
 $primary-button-font-color: #fff !default;
+$error-color: rgb(234, 89, 83) !default;
 
 %font-default {
   font-family: Montserrat, Arial, sans-serif;
@@ -236,4 +237,10 @@ h1 {
   display: flex;
   justify-content: flex-end;
   width: 100%;
+}
+
+.warning {
+  border: 1px solid $error-color;
+  padding: 10px;
+  font-weight: 600;
 }

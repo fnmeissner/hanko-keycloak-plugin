@@ -16,9 +16,20 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
   }
 
   render() {
-    const { devices, keycloak, deviceDeletedHandler } = this.props
+    // const { devices, keycloak, deviceDeletedHandler } = this.props
+    const { keycloak, deviceDeletedHandler } = this.props
+    const devices: Device[] = []
 
-    if (devices.length === 0) return <div>no devices registered</div>
+    if (devices.length === 0)
+      return (
+        <div className="warning">
+          <h3>Please register a 2nd factor now!</h3>
+          <p>
+            You don't have any 2nd factor device configured. If you logout now,
+            you cannot login anymore.
+          </p>
+        </div>
+      )
 
     return (
       <table>
