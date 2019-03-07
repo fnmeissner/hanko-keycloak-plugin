@@ -22,6 +22,7 @@ public class HankoUtils {
     public static String CONFIG_API_URL = "hanko.apiurl";
     public static String CONFIG_APIKEY = "hanko.apikey";
     public static String CONFIG_APIKEYID = "hanko.apikeyid";
+    public static String CONFIG_REQUIRE_2FA = "hanko.require2fa";
     public static String CONFIG_HAS_PROXY = "hanko.hasproxy";
     public static String CONFIG_PROXY_ADDRESS = "hanko.proxyaddress";
     public static String CONFIG_PROXY_PORT = "hanko.proxyport";
@@ -52,15 +53,17 @@ public class HankoUtils {
         String apiKeyId = getApiKeyId(session);
         String apiKeySecret = getApiKey(session);
 
+        Boolean requires2fa = getRequires2FA(session);
+
         Boolean apiHasProxy = getHasProxy(session);
 
         if(apiHasProxy) {
             String proxyAddress = getProxyAddress(session);
             String proxyPort = getProxyPort(session);
             String proxyType = getProxyType(session);
-            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret, proxyAddress, proxyPort, proxyType);
+            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret, requires2fa, proxyAddress, proxyPort, proxyType);
         } else {
-            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret);
+            return new HankoClientConfig(apiUrl, apiKeyId, apiKeySecret, requires2fa);
         }
     }
 
@@ -74,6 +77,15 @@ public class HankoUtils {
 
     static String getApiKeyId(KeycloakSession session) throws HankoConfigurationException {
         return getNonEmptyConfigValue(session, CONFIG_APIKEYID, "API key id");
+    }
+
+    static Boolean getRequires2FA(KeycloakSession session) throws HankoConfigurationException {
+        String value = getNullableConfigValue(session, CONFIG_REQUIRE_2FA, "Requires 2FA");
+        if(value == null) {
+            return true;
+        } else {
+            return Boolean.parseBoolean(value);
+        }
     }
 
     static Boolean getHasProxy(KeycloakSession session) throws HankoConfigurationException {

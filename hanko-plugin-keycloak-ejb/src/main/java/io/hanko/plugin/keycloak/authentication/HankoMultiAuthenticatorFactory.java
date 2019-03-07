@@ -119,6 +119,13 @@ public class HankoMultiAuthenticatorFactory implements AuthenticatorFactory, Con
         configProperties.add(property);
 
         property = new ProviderConfigProperty();
+        property.setName(HankoUtils.CONFIG_REQUIRE_2FA);
+        property.setLabel("Require two factor authentication");
+        property.setType(ProviderConfigProperty.BOOLEAN_TYPE);
+        property.setHelpText("Require two factor authentication.");
+        configProperties.add(property);
+
+        property = new ProviderConfigProperty();
         property.setName(HankoUtils.CONFIG_HAS_PROXY);
         property.setLabel("Use Proxy server");
         property.setType(ProviderConfigProperty.BOOLEAN_TYPE);

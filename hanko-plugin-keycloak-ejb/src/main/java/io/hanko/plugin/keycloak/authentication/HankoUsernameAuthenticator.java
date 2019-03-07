@@ -104,6 +104,8 @@ public class HankoUsernameAuthenticator extends AbstractUsernameFormAuthenticato
             return false;
         }
 
+
+
         String rememberMe = inputData.getFirst("rememberMe");
         boolean remember = rememberMe != null && rememberMe.equalsIgnoreCase("on");
         if (remember) {

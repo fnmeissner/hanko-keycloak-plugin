@@ -1,20 +1,22 @@
 package io.hanko.client.java;
 
 public class HankoClientConfig {
-    public HankoClientConfig(String apiUrl, String apiKeyId, String apiKeySecret) {
+    public HankoClientConfig(String apiUrl, String apiKeyId, String apiKeySecret, Boolean requries2fa) {
         this.apiUrl = apiUrl;
         this.apiKeyId = apiKeyId;
         this.apiKeySecret = apiKeySecret;
+        this.requries2fa = requries2fa;
         this.isProxyEnabled = false;
         this.proxyAddress = null;
         this.proxyPort = null;
         this.proxyType = null;
     }
 
-    public HankoClientConfig(String apiUrl, String apiKeyId, String apiKeySecret, String proxyAddress, String proxyPort, String proxyType) {
+    public HankoClientConfig(String apiUrl, String apiKeyId, String apiKeySecret, Boolean requries2fa, String proxyAddress, String proxyPort, String proxyType) {
         this.apiUrl = apiUrl;
         this.apiKeyId = apiKeyId;
         this.apiKeySecret = apiKeySecret;
+        this.requries2fa = requries2fa;
         this.isProxyEnabled = true;
         this.proxyAddress = proxyAddress;
         this.proxyPort = Integer.parseInt(proxyPort);
@@ -32,6 +34,8 @@ public class HankoClientConfig {
     public String getApiKeySecret() {
         return apiKeySecret;
     }
+
+    public Boolean getRequries2fa() { return requries2fa; }
 
     public Boolean getProxyEnabled() {
         return isProxyEnabled;
@@ -52,9 +56,9 @@ public class HankoClientConfig {
     private String apiUrl;
     private String apiKeyId;
     private String apiKeySecret;
+    private Boolean requries2fa;
     private Boolean isProxyEnabled;
     private String proxyAddress;
     private Integer proxyPort;
     private String proxyType;
-
 }

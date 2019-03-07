@@ -70,7 +70,6 @@
                         }
                     });
                 };
-
                 window.onload = awaitLoginComplete;
             </script>
         <#elseif loginMethod = "WEBAUTHN">

@@ -4,11 +4,15 @@
     </#if>
     <div class="stretched-row">
     <#if loginMethod != "PASSWORD">
-        <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
-            <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
-                   type="submit" name="switch" id="button_cancel" value="Password"/>
-            <input type="hidden" name="loginMethod" value="PASSWORD"/>
-        </form>
+        <#if isSecondFactor != true>
+            <#if hasPassword == true>
+                <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
+                    <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
+                           type="submit" name="switch" id="button_cancel" value="Password"/>
+                    <input type="hidden" name="loginMethod" value="PASSWORD"/>
+                </form>
+            </#if>
+        </#if>
     </#if>
     <#if loginMethod != "UAF">
         <#if hasUaf == true>

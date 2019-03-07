@@ -19,6 +19,7 @@ import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.services.ServicesLogger;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.services.util.CookieHelper;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -53,7 +54,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
 
         if (formData.containsKey("switch")) {
             LoginMethod loginMethod = LoginMethod.valueOf(formData.getFirst("loginMethod"));
-            renderChallenge(loginMethod, context, getDevices(context));
+            renderChallenge(loginMethod, context, null);
             return;
         }
 
@@ -86,9 +87,10 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                         logger.warn("Authentication failed for user " + context.getUser().getUsername());
                         cancelLogin(context);
                     }
-                } catch (Exception ex) {
+                } catch (HankoConfigurationException ex) {
                     logger.error("Hanko request verification failed.", ex);
                     cancelLogin(context);
+                    context.failure(AuthenticationFlowError.INTERNAL_ERROR);
                 }
                 break;
 
@@ -103,34 +105,62 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
                     HankoRequest hankoRequest = hankoClient.validateWebAuthn(config, hankoRequestId, hankoResponse);
 
                     if (hankoRequest.isConfirmed()) {
-                        setAuthMethodCookie(loginMethod, context);
+                        if(config.getRequries2fa()) {
+                            setAuthMethodCookie(LoginMethod.PASSWORD, context);
+                        } else {
+                            setAuthMethodCookie(loginMethod, context);
+                        }
                         context.success();
                     } else {
                         logger.warn("Authentication failed for user " + context.getUser().getUsername());
-                        cancelLogin(context);
+                        context.getEvent().user(currentUser);
+                        context.getEvent().error(Errors.INVALID_USER_CREDENTIALS);
+                        renderChallenge(LoginMethod.WEBAUTHN, context, AuthenticationFlowError.INVALID_CREDENTIALS);
                     }
-                } catch (Exception ex) {
+                } catch (HankoConfigurationException ex) {
                     logger.error("Hanko request verification failed.", ex);
                     cancelLogin(context);
+                    context.failure(AuthenticationFlowError.INTERNAL_ERROR);
                 }
                 break;
 
             default:
-                if (!validatePassword(context, currentUser, formData)) {
-                    context.failure(AuthenticationFlowError.INVALID_CREDENTIALS);
+                try {
+                    if (!validatePassword(context, currentUser, formData)) {
+                        context.getEvent().user(currentUser);
+                        context.getEvent().error(Errors.INVALID_USER_CREDENTIALS);
+                        logger.warn("Invalid passsword, rendering new challenge");
+                        renderChallenge(LoginMethod.PASSWORD, context, AuthenticationFlowError.INVALID_CREDENTIALS);
+                        return;
+                    }
+
+                    if (!enabledUser(context, currentUser)) {
+                        cancelLogin(context);
+                        context.getEvent().user(currentUser);
+                        context.getEvent().error(Errors.USER_DISABLED);
+                        return;
+                    }
+
+                    logger.error("password verification successful");
+
+                    HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+                    if(config.getRequries2fa()) {
+                        if(hasWebAuthn(getDevices(context))) {
+                            context.getSession().setAttribute("REQUIRE_2FA", "true");
+                            renderChallenge(LoginMethod.WEBAUTHN, context, null);
+                        } else {
+                            context.failure(AuthenticationFlowError.USER_DISABLED);
+                        }
+                        return;
+                    } else {
+                        setAuthMethodCookie(loginMethod, context);
+                        context.success();
+                    }
+                } catch (HankoConfigurationException ex) {
+                    logger.error("Hanko password verification failed.", ex);
                     cancelLogin(context);
-                    return;
+                    context.failure(AuthenticationFlowError.INTERNAL_ERROR);
                 }
-
-                if (!enabledUser(context, currentUser)) {
-                    cancelLogin(context);
-                    return;
-                }
-
-                logger.error("login successful");
-
-                setAuthMethodCookie(loginMethod, context);
-                context.success();
                 break;
         }
     }
@@ -154,7 +184,6 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         } else {
             context.getEvent().user(user);
             context.getEvent().error(Errors.INVALID_USER_CREDENTIALS);
-            context.clearUser();
             return false;
         }
     }
@@ -186,8 +215,40 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
         return devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "FIDO_UAF"));
     }
 
+    private boolean showWebAuthn(List<HankoDevice> devices, AuthenticationFlowContext context) {
+        try {
+            HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+
+            if (config.getRequries2fa()) {
+                return false;
+            } else {
+                return hasWebAuthn(devices);
+            }
+        } catch (HankoConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private boolean hasWebAuthn(List<HankoDevice> devices) {
         return devices.stream().anyMatch(device -> Objects.equals(device.authenticatorType, "WEBAUTHN"));
+    }
+
+    private boolean hasPassword(List<HankoDevice> devices, AuthenticationFlowContext context) {
+        try {
+            HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+            return !config.getRequries2fa() || hasWebAuthn(devices);
+        } catch (HankoConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private boolean canLogin(List<HankoDevice> devices, AuthenticationFlowContext context) {
+        try {
+            HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+            return !config.getRequries2fa() || showWebAuthn(devices, context) || hasUaf(devices);
+        } catch (HankoConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private LoginMethod getLoginMethod(AuthenticationFlowContext authenticationFlowContext, List<HankoDevice> devices) {
@@ -202,7 +263,7 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
             return LoginMethod.PASSWORD;
         } else {
 
-            boolean hasWebAuthnAuthenticator = hasWebAuthn(devices);
+            boolean hasWebAuthnAuthenticator = showWebAuthn(devices, authenticationFlowContext);
             boolean hasUafAuthenticator = hasUaf(devices);
 
             if (preferWebauthn && hasWebAuthnAuthenticator) {
@@ -225,57 +286,85 @@ public class HankoMultiAuthenticator extends AbstractUsernameFormAuthenticator i
     public void authenticate(AuthenticationFlowContext authenticationFlowContext) {
         List<HankoDevice> devices = getDevices(authenticationFlowContext);
         LoginMethod loginMethod = getLoginMethod(authenticationFlowContext, devices);
-        renderChallenge(loginMethod, authenticationFlowContext, devices);
+        renderChallenge(loginMethod, authenticationFlowContext, null);
     }
 
-    private void renderChallenge(LoginMethod loginMethod, AuthenticationFlowContext authenticationFlowContext, List<HankoDevice> devices) {
-        UserModel currentUser = authenticationFlowContext.getUser();
+    private void renderChallenge(AuthenticationFlowContext context, Response response, AuthenticationFlowError error) {
+        if(error != null) {
+            logger.warn("rendering challenge with error: " + error.name());
+            context.failureChallenge(error, response);
+        } else {
+            context.challenge(response);
+        }
+    }
+
+    private void renderChallenge(LoginMethod loginMethod, AuthenticationFlowContext context, AuthenticationFlowError error) {
+        UserModel currentUser = context.getUser();
+        List<HankoDevice> devices = getDevices(context);
+
         String userId = userStore.getHankoUserId(currentUser);
         String username = currentUser.getUsername();
 
-        LoginFormsProvider formsProvider = authenticationFlowContext.form();
+        LoginFormsProvider formsProvider = context.form();
         formsProvider.setAttribute("hasUaf", hasUaf(devices));
-        formsProvider.setAttribute("hasWebAuthn", hasWebAuthn(devices));
-        formsProvider.setAttribute("hasLoginMethods", hasUaf(devices) || hasWebAuthn(devices));
+        formsProvider.setAttribute("hasWebAuthn", showWebAuthn(devices, context));
+        formsProvider.setAttribute("hasPassword", hasPassword(devices, context));
+        formsProvider.setAttribute("isSecondFactor", isSecondFactor(context));
+        formsProvider.setAttribute("hasLoginMethods", hasPassword(devices, context) && hasUaf(devices) || showWebAuthn(devices, context));
         formsProvider.setAttribute("username", username);
+
+        List<String> errors = new LinkedList<String>();
+        if(error != null) {
+            formsProvider.setError(Messages.INVALID_USER);
+        }
 
         switch (loginMethod) {
             case UAF:
                 logger.error("using uaf");
                 try {
-                    HankoClientConfig config = HankoUtils.createConfig(authenticationFlowContext.getSession());
-                    String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
+                    HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+                    String remoteAddress = context.getConnection().getRemoteAddr();
                     HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress, HankoClient.FidoType.FIDO_UAF);
                     userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
                     Response response = formsProvider.setAttribute("requestId", hankoRequest.id).setAttribute("loginMethod", "UAF").createForm("hanko-multi-login.ftl");
-                    authenticationFlowContext.challenge(response);
+                    renderChallenge(context, response, error);
 
                 } catch (HankoConfigurationException ex) {
                     logger.error("Could not create Hanko request.", ex);
-                    cancelLogin(authenticationFlowContext);
+                    cancelLogin(context);
                 }
                 break;
             case WEBAUTHN:
                 logger.error("using webauthn authenticator");
                 try {
-                    HankoClientConfig config = HankoUtils.createConfig(authenticationFlowContext.getSession());
-                    String remoteAddress = authenticationFlowContext.getConnection().getRemoteAddr();
+                    HankoClientConfig config = HankoUtils.createConfig(context.getSession());
+                    String remoteAddress = context.getConnection().getRemoteAddr();
                     HankoRequest hankoRequest = hankoClient.requestAuthentication(config, userId, username, remoteAddress, HankoClient.FidoType.WEBAUTHN);
                     userStore.setHankoRequestId(currentUser, hankoRequest.id);
 
                     Response response = formsProvider.setAttribute("request", hankoRequest.request).setAttribute("loginMethod", "WEBAUTHN").createForm("hanko-multi-login.ftl");
-                    authenticationFlowContext.challenge(response);
+                    renderChallenge(context, response, error);
 
                 } catch (HankoConfigurationException ex) {
                     logger.error("Could not create Hanko request.", ex);
-                    cancelLogin(authenticationFlowContext);
+                    cancelLogin(context);
                 }
                 break;
             default:
                 Response response = formsProvider.setAttribute("loginMethod", "PASSWORD").createForm("hanko-multi-login.ftl");
-                authenticationFlowContext.challenge(response);
+                renderChallenge(context, response, error);
                 break;
+        }
+    }
+
+    private boolean isSecondFactor(AuthenticationFlowContext authenticationFlowContext) {
+        Object attribute = authenticationFlowContext.getSession().getAttribute("REQUIRE_2FA");
+
+        if(attribute != null && attribute.equals("true")) {
+            return true;
+        } else {
+            return false;
         }
     }
 
