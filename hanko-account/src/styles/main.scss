@@ -244,3 +244,27 @@ h1 {
   padding: 10px;
   font-weight: 600;
 }
+
+.popup-wrapper {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.popup-content {
+  width: 500px;
+  border-radius: 2px;
+  background-color: rgb(254, 254, 254);
+  margin: auto;
+  padding: 20px;
+}
+
+button.small {
+  width: 100px;
+}

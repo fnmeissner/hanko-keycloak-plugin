@@ -16,9 +16,10 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
   }
 
   render() {
-    // const { devices, keycloak, deviceDeletedHandler } = this.props
-    const { keycloak, deviceDeletedHandler } = this.props
-    const devices: Device[] = []
+    const { devices, keycloak, deviceDeletedHandler } = this.props
+    const confirmDeregistration = devices.length === 1
+    // const { keycloak, deviceDeletedHandler } = this.props
+    // const devices: Device[] = []
 
     if (devices.length === 0)
       return (
@@ -50,6 +51,7 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
                 key={index}
                 keycloak={keycloak}
                 deviceDeletedHandler={deviceDeletedHandler}
+                confirmDeregistration={confirmDeregistration}
               />
             )
           })}
