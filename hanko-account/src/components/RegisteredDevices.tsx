@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Device } from '../models/Device'
 import { DeviceComponent } from './DeviceComponent'
+import { FormattedMessage } from 'react-intl'
 
 type RegisteredDevicesProps = {
   keycloak: Keycloak.KeycloakInstance
@@ -26,25 +27,62 @@ export class RegisteredDevices extends React.Component<RegisteredDevicesProps> {
     if (devices.length === 0)
       return window.requires2fa === 'true' ? (
         <div className="warning">
-          <h3>Please register a 2nd factor now!</h3>
-          <p>
-            You don't have any 2nd factor device configured. If you logout now,
-            you cannot login anymore.
-          </p>
+          <FormattedMessage
+            id="RegisteredDevices.noDeviceWarningHeader"
+            defaultMessage="Please register a 2nd factor now!"
+          >
+            {content => <h3>{content}</h3>}
+          </FormattedMessage>
+          <FormattedMessage
+            id="RegisteredDevices.noDeviceWarningMessage"
+            defaultMessage="You don't have any 2nd factor device configured. If you logout now, you cannot login anymore."
+          >
+            {content => <p>{content}</p>}
+          </FormattedMessage>
         </div>
       ) : (
-        <div>No devices registered.</div>
+        <FormattedMessage
+          id="RegisteredDevices.noDeviceMessage"
+          defaultMessage="No devices registered."
+        >
+          {content => <div>{content}</div>}
+        </FormattedMessage>
       )
 
     return (
       <table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Created At</th>
-            <th>Last Activity</th>
-            <th>Manage</th>
+            <FormattedMessage
+              id="RegisteredDevices.deviceNameLabel"
+              defaultMessage="Name"
+            >
+              {content => <th>{content}</th>}
+            </FormattedMessage>
+            <FormattedMessage
+              id="RegisteredDevices.deviceNameType"
+              defaultMessage="Type"
+            >
+              {content => <th>{content}</th>}
+            </FormattedMessage>
+            <FormattedMessage
+              id="RegisteredDevices.deviceNameCreatedAt"
+              defaultMessage="Created At"
+            >
+              {content => <th>{content}</th>}
+            </FormattedMessage>
+            <FormattedMessage
+              id="RegisteredDevices.deviceNameLastActivity"
+              defaultMessage="Last Activity"
+            >
+              {content => <th>{content}</th>}
+            </FormattedMessage>
+            <FormattedMessage
+              id="RegisteredDevices.deviceNameManage"
+              defaultMessage="Manage"
+            >
+              {content => <th>{content}</th>}
+            </FormattedMessage>
           </tr>
         </thead>
         <tbody>

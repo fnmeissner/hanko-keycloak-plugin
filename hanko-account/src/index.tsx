@@ -7,6 +7,7 @@ import { App } from './containers/App'
 import * as Keycloak from 'keycloak-js'
 
 import { NotLoggedIn } from './containers/NotLoggedIn'
+import { IntlProvider } from 'react-intl'
 
 const development = process.env.NODE_ENV !== 'production'
 
@@ -33,13 +34,18 @@ const keycloak = Keycloak({
 keycloak
   .init({ onLoad: 'login-required' })
   .success(_ => {
-    ReactDOM.render(<App keycloak={keycloak} />, document.getElementById(
-      'root'
-    ) as HTMLElement)
+    ReactDOM.render(
+      <IntlProvider>
+        <App keycloak={keycloak} />
+      </IntlProvider>,
+      document.getElementById('root') as HTMLElement
+    )
   })
   .error(() => {
     ReactDOM.render(
-      <NotLoggedIn keycloak={keycloak} />,
+      <IntlProvider>
+        <NotLoggedIn keycloak={keycloak} />
+      </IntlProvider>,
       document.getElementById('root') as HTMLElement
     )
   })

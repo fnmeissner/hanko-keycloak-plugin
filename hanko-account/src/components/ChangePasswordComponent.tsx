@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { fetchApi } from '../utils/fetchApi'
+import { FormattedMessage } from 'react-intl'
 
 type ChangePasswordComponentProps = {
   keycloak: Keycloak.KeycloakInstance
@@ -64,9 +65,20 @@ export class ChangePasswordComponent extends React.Component<
     const { password, passwordValidation } = this.state
     return (
       <div className="container">
-        <h1>Change Password</h1>
+        <FormattedMessage
+          id="ChangePassword.changePasswordHeader"
+          defaultMessage="Change Password"
+        >
+          {content => <h1>{content}</h1>}
+        </FormattedMessage>
+
         <div className="formfield">
-          <label>Password</label>
+          <FormattedMessage
+            id="ChangePassword.passwordLabel"
+            defaultMessage="Password"
+          >
+            {content => <label>{content}</label>}
+          </FormattedMessage>
           <input
             type="password"
             value={password}
@@ -74,7 +86,12 @@ export class ChangePasswordComponent extends React.Component<
           />
         </div>
         <div className="formfield">
-          <label>Password (repeat)</label>
+          <FormattedMessage
+            id="ChangePassword.repeatPasswordLabel"
+            defaultMessage="Password (repeat)"
+          >
+            {content => <label>{content}</label>}
+          </FormattedMessage>
           <input
             type="password"
             value={passwordValidation}
@@ -82,7 +99,14 @@ export class ChangePasswordComponent extends React.Component<
           />
         </div>
         <div className="pull-right">
-          <button onClick={this.changePassword}>Change</button>
+          <FormattedMessage
+            id="ChangePassword.changeButton"
+            defaultMessage="Change"
+          >
+            {content => (
+              <button onClick={this.changePassword}>{content}</button>
+            )}
+          </FormattedMessage>
         </div>
       </div>
     )

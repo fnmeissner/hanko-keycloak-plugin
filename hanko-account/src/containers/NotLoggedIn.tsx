@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { FormattedMessage } from 'react-intl'
 
 type NotLoggedInProps = {
   keycloak: Keycloak.KeycloakInstance
@@ -11,8 +12,19 @@ export const NotLoggedIn = ({ keycloak }: NotLoggedInProps) => {
 
   return (
     <div>
-      <h1>Login failed</h1>
-      <button onClick={login}>Try again</button>
+      <FormattedMessage
+        id="NotLoggedIn.loginFailedHeader"
+        defaultMessage="Login failed"
+      >
+        {content => <h1>{content}</h1>}
+      </FormattedMessage>
+
+      <FormattedMessage
+        id="NotLoggedIn.tryAgainButton"
+        defaultMessage="Try again"
+      >
+        {content => <button onClick={login}>{content}</button>}
+      </FormattedMessage>
     </div>
   )
 }

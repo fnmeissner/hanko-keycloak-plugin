@@ -6,6 +6,7 @@ import { deviceFromJson, Device } from '../models/Device'
 import { ChangePasswordComponent } from '../components/ChangePasswordComponent'
 import glamorous from 'glamorous'
 import { AddWebAuthn } from '../components/AddWebAuthn'
+import { FormattedMessage } from 'react-intl'
 
 type AppState = {
   showAddHankoAuthenticator: boolean
@@ -118,7 +119,12 @@ export class App extends React.Component<AppProps, AppState> {
             >
               <img className="navbar-logo" src={logo} />
             </a>
-            <span className="navbar-header">Manage Account</span>
+            <FormattedMessage
+              id="App.manageAccountHeader"
+              defaultMessage="Manage Account"
+            >
+              {content => <span className="navbar-header">{content}</span>}
+            </FormattedMessage>
           </div>
           {redirectParam ? (
             <a className="navigation-bar-link" href={redirectParam}>
@@ -129,20 +135,41 @@ export class App extends React.Component<AppProps, AppState> {
         <div id="content">
           <div className="center column">
             <div className="container">
-              <h1>My Account</h1>
+              <FormattedMessage
+                id="App.myAccountHeader"
+                defaultMessage="My Account"
+              >
+                {content => <h1>{content}</h1>}
+              </FormattedMessage>
+
               <div className="formfield">
-                <label>Name</label>
+                <FormattedMessage id="App.nameLabel" defaultMessage="Name">
+                  {content => <label>{content}</label>}
+                </FormattedMessage>
                 <span>{username}</span>
               </div>
               <div className="formfield">
-                <label>E-Mail</label>
+                <FormattedMessage id="App.emailLabel" defaultMessage="E-Mail">
+                  {content => <label>{content}</label>}
+                </FormattedMessage>
                 <span>{email}</span>
               </div>
             </div>
             <div className="container">
-              <h1>Registered Devices</h1>
+              <FormattedMessage
+                id="App.registeredDevicesHeader"
+                defaultMessage="Registered Devices"
+              >
+                {content => <h1>{content}</h1>}
+              </FormattedMessage>
+
               {devices === undefined ? (
-                <div>Loading...</div>
+                <FormattedMessage
+                  id="App.leadingMessage"
+                  defaultMessage="Loading..."
+                >
+                  {content => <div>{content}</div>}
+                </FormattedMessage>
               ) : (
                 <RegisteredDevices
                   keycloak={keycloak}
@@ -161,24 +188,47 @@ export class App extends React.Component<AppProps, AppState> {
                 />
               ) : (
                 <div className="button-list pull-right">
-                  <button onClick={this.showAddHankoAuthenticator}>
-                    Add Hanko Authenticator
-                  </button>
-                  <AddWebAuthn
-                    refetch={this.fetchDevices}
-                    keycloak={keycloak}
-                    type="roaming"
+                  <FormattedMessage
+                    id="App.addHankoAuthenticatorButton"
+                    defaultMessage="Add Hanko Authenticator"
                   >
-                    Add Security Key
-                  </AddWebAuthn>
+                    {content => (
+                      <button onClick={this.showAddHankoAuthenticator}>
+                        {content}
+                      </button>
+                    )}
+                  </FormattedMessage>
+
+                  <FormattedMessage
+                    id="App.addSecurityKeyButton"
+                    defaultMessage="Add Security Key"
+                  >
+                    {content => (
+                      <AddWebAuthn
+                        refetch={this.fetchDevices}
+                        keycloak={keycloak}
+                        type="roaming"
+                      >
+                        {content}
+                      </AddWebAuthn>
+                    )}
+                  </FormattedMessage>
+
                   {showAddPlatformAuthenticator ? (
-                    <AddWebAuthn
-                      refetch={this.fetchDevices}
-                      keycloak={keycloak}
-                      type="platform"
+                    <FormattedMessage
+                      id="App.addWindowsHelloButton"
+                      defaultMessage="Add Windows Hello"
                     >
-                      Add Windows Hello
-                    </AddWebAuthn>
+                      {content => (
+                        <AddWebAuthn
+                          refetch={this.fetchDevices}
+                          keycloak={keycloak}
+                          type="platform"
+                        >
+                          {content}
+                        </AddWebAuthn>
+                      )}
+                    </FormattedMessage>
                   ) : null}
                 </div>
               )}

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { fetchApi } from '../utils/fetchApi'
+import { FormattedMessage } from 'react-intl'
 
 type AddHankoAuthenticatorProps = {
   cancelHandler: () => void
@@ -73,14 +74,24 @@ export class AddHankoAuthenticator extends React.Component<
 
     return (
       <div className="flex column align-start">
-        <h1>Register new Hanko Authenticator</h1>
+        <FormattedMessage
+          id="AddHankoAuthenticator.registerNewAuthenticatorHeader"
+          defaultMessage="Register new Hanko Authenticator"
+        >
+          {content => <h1>{content}</h1>}
+        </FormattedMessage>
         {qrCode ? (
           <div className="margin-bottom">
             <img src={`${qrCode}?fg=0&bg=ffffff`} className="fadein" />
           </div>
         ) : null}
         <div className="pull-right">
-          <button onClick={this.cancel}>Cancel</button>
+          <FormattedMessage
+            id="AddHankoAuthenticator.cancelButton"
+            defaultMessage="Cancel"
+          >
+            {content => <button onClick={this.cancel}>{content}</button>}
+          </FormattedMessage>
         </div>
       </div>
     )

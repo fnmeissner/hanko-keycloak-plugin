@@ -3,6 +3,7 @@ import { fetchApi } from '../utils/fetchApi'
 import { Device } from '../models/Device'
 import * as moment from 'moment'
 import { PopupDialog } from './PopupDialog'
+import { FormattedMessage } from 'react-intl'
 
 type DeviceProps = {
   device: Device
@@ -64,23 +65,54 @@ export class DeviceComponent extends React.Component<DeviceProps, DeviceState> {
         <td>{moment(device.createdAt).fromNow()}</td>
         <td>{moment(device.lastUsage).fromNow()}</td>
         <td>
-          <a href="#" onClick={this.confirmOrDeregister}>
-            delete
-          </a>
+          <FormattedMessage
+            id="DeviceComponent.deleteButton"
+            defaultMessage="delete"
+          >
+            {content => (
+              <a href="#" onClick={this.confirmOrDeregister}>
+                {content}
+              </a>
+            )}
+          </FormattedMessage>
           {showConfirmationDialog ? (
             <PopupDialog>
-              <h3>Warning</h3>
-              <p>
-                You are about to delete your last device. You will not be able
-                to login unless you register another device.
-              </p>
+              <FormattedMessage
+                id="DeviceComponent.warningHeader"
+                defaultMessage="Warning"
+              >
+                {content => <h3>{content}</h3>}
+              </FormattedMessage>
+              <FormattedMessage
+                id="DeviceComponent.warningMessage"
+                defaultMessage="You are about to delete your last device. You will not be able to login unless you register another device."
+              >
+                {content => <p>{content}</p>}
+              </FormattedMessage>
               <div className="button-list pull-right">
-                <button className="small" onClick={this.hideConfirmationDialog}>
-                  cancel
-                </button>
-                <button className="small" onClick={this.deregister}>
-                  confirm
-                </button>
+                <FormattedMessage
+                  id="DeviceComponent.cancelButton"
+                  defaultMessage="cancel"
+                >
+                  {content => (
+                    <button
+                      className="small"
+                      onClick={this.hideConfirmationDialog}
+                    >
+                      {content}
+                    </button>
+                  )}
+                </FormattedMessage>
+                <FormattedMessage
+                  id="DeviceComponent.confirmButton"
+                  defaultMessage="confirm"
+                >
+                  {content => (
+                    <button className="small" onClick={this.deregister}>
+                      {content}
+                    </button>
+                  )}
+                </FormattedMessage>
               </div>
             </PopupDialog>
           ) : null}
