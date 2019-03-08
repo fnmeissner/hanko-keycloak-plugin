@@ -12,6 +12,6 @@ interface PublicKeyCredential {
 }
 
 interface Navigator {
-  userLanguage: string | undefined
-  language: string | undefined
+  userLanguage: string
+  language: string
 }

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "RegisteredDevices.noDeviceWarningHeader",
+    "defaultMessage": "Please register a 2nd factor now!"
+  },
+  {
+    "id": "RegisteredDevices.noDeviceWarningMessage",
+    "defaultMessage": "You don't have any 2nd factor device configured. If you logout now, you cannot login anymore."
+  },
+  {
+    "id": "RegisteredDevices.noDeviceMessage",
+    "defaultMessage": "No devices registered."
+  },
+  {
+    "id": "RegisteredDevices.deviceNameLabel",
+    "defaultMessage": "Name"
+  },
+  {
+    "id": "RegisteredDevices.deviceNameType",
+    "defaultMessage": "Type"
+  },
+  {
+    "id": "RegisteredDevices.deviceNameCreatedAt",
+    "defaultMessage": "Created At"
+  },
+  {
+    "id": "RegisteredDevices.deviceNameLastActivity",
+    "defaultMessage": "Last Activity"
+  },
+  {
+    "id": "RegisteredDevices.deviceNameManage",
+    "defaultMessage": "Manage"
+  }
+]

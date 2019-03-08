@@ -1,0 +1,22 @@
+[
+  {
+    "id": "DeviceComponent.deleteButton",
+    "defaultMessage": "delete"
+  },
+  {
+    "id": "DeviceComponent.warningHeader",
+    "defaultMessage": "Warning"
+  },
+  {
+    "id": "DeviceComponent.warningMessage",
+    "defaultMessage": "You are about to delete your last device. You will not be able to login unless you register another device."
+  },
+  {
+    "id": "DeviceComponent.cancelButton",
+    "defaultMessage": "cancel"
+  },
+  {
+    "id": "DeviceComponent.confirmButton",
+    "defaultMessage": "confirm"
+  }
+]

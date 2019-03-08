@@ -1,0 +1,10 @@
+[
+  {
+    "id": "NotLoggedIn.loginFailedHeader",
+    "defaultMessage": "Login failed"
+  },
+  {
+    "id": "NotLoggedIn.tryAgainButton",
+    "defaultMessage": "Try again"
+  }
+]

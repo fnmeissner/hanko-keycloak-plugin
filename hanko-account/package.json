@@ -8,11 +8,15 @@
     "build": "webpack --config webpack.prod.js",
     "sass": "node-sass --output dist/ src/styles",
     "build-keycloak": "webpack --config webpack.keycloak.js && npm run sass",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "trans:compile": "tsc -p .  --target ES6 --module es6 --jsx preserve --outDir extracted",
+    "trans:extract": "babel \"extracted/**/*.jsx\"",
+    "trans:manage": "node scripts/translationRunner.js"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@types/node": "^10.12.21",
@@ -26,6 +30,7 @@
     "html-webpack-plugin": "^4.0.0-beta.5",
     "ignore-loader": "^0.1.2",
     "node-sass": "^4.11.0",
+    "react-intl-translations-manager": "^5.0.3",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.3",
@@ -37,7 +42,9 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "@babel/preset-react": "^7.0.0",
     "@types/react-intl": "^2.3.17",
+    "babel-plugin-react-intl": "^3.0.1",
     "glamor": "^2.20.40",
     "glamorous": "^4.13.1",
     "keycloak-js": "^4.8.3",

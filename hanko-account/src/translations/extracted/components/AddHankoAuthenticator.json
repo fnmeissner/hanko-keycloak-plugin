@@ -1,0 +1,10 @@
+[
+  {
+    "id": "AddHankoAuthenticator.registerNewAuthenticatorHeader",
+    "defaultMessage": "Register new Hanko Authenticator"
+  },
+  {
+    "id": "AddHankoAuthenticator.cancelButton",
+    "defaultMessage": "Cancel"
+  }
+]

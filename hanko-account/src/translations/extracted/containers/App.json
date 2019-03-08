@@ -1,0 +1,38 @@
+[
+  {
+    "id": "App.manageAccountHeader",
+    "defaultMessage": "Manage Account"
+  },
+  {
+    "id": "App.myAccountHeader",
+    "defaultMessage": "My Account"
+  },
+  {
+    "id": "App.nameLabel",
+    "defaultMessage": "Name"
+  },
+  {
+    "id": "App.emailLabel",
+    "defaultMessage": "E-Mail"
+  },
+  {
+    "id": "App.registeredDevicesHeader",
+    "defaultMessage": "Registered Devices"
+  },
+  {
+    "id": "App.leadingMessage",
+    "defaultMessage": "Loading..."
+  },
+  {
+    "id": "App.addHankoAuthenticatorButton",
+    "defaultMessage": "Add Hanko Authenticator"
+  },
+  {
+    "id": "App.addSecurityKeyButton",
+    "defaultMessage": "Add Security Key"
+  },
+  {
+    "id": "App.addWindowsHelloButton",
+    "defaultMessage": "Add Windows Hello"
+  }
+]
