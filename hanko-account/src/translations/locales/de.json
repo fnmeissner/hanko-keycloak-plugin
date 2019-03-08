@@ -21,7 +21,7 @@
   "DeviceComponent.warningMessage": "Möchten Sie wirklich ihr letztes Anmeldegerät löschen? Wenn Sie keine neues Anmeldegerät registrieren, können Sie sich zukünftig nicht mehr anmelden.",
   "NotLoggedIn.loginFailedHeader": "Login fehlgeschlagen",
   "NotLoggedIn.tryAgainButton": "Erneut versuchen",
-  "RegisteredDevices.deviceNameCreatedAt": "Erzeugt am",
+  "RegisteredDevices.deviceNameCreatedAt": "Registriert",
   "RegisteredDevices.deviceNameLabel": "Name",
   "RegisteredDevices.deviceNameLastActivity": "Zuletzt aktiv",
   "RegisteredDevices.deviceNameManage": "Ändern",

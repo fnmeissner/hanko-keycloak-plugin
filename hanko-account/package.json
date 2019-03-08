@@ -11,13 +11,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "trans:compile": "tsc -p .  --target ES6 --module es6 --jsx preserve --outDir extracted",
     "trans:extract": "babel \"extracted/**/*.jsx\"",
-    "trans:manage": "node scripts/translationRunner.js"
+    "trans:manage": "node scripts/translationRunner.js",
+    "trans:merge": "babel-node scripts/mergeTranslations.js"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@types/node": "^10.12.21",
     "@types/react": "^16.8.2",
