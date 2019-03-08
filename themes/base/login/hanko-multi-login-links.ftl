@@ -1,6 +1,6 @@
 <div class="login-methods">
     <#if hasLoginMethods == true>
-        <h3 class="or"><span>or</span></h3>
+        <h3 class="or"><span>${msg("or")}</span></h3>
     </#if>
     <div class="stretched-row">
     <#if loginMethod != "PASSWORD">
@@ -8,7 +8,7 @@
             <#if hasPassword == true>
                 <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
                     <input class="${properties.kcButtonClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!} btn-login-method"
-                           type="submit" name="switch" id="button_cancel" value="Password"/>
+                           type="submit" name="switch" id="button_cancel" value="${msg("password")}"/>
                     <input type="hidden" name="loginMethod" value="PASSWORD"/>
                 </form>
             </#if>
@@ -37,9 +37,9 @@
 
 <div id="kc-registration">
     <form action="${url.loginAction}" style="display:hidden" class="${properties.kcFFormClass!}" method="post">
-        <span>not ${username}?
+        <span>${msg("not")} ${username}?
             <input class="${properties.kcButtonClass!} ${properties.kcButtonDefaultClass!} ${properties.kcButtonLargeClass!} btn-login-change-user"
-                  type="submit" name="cancel" id="button_cancel" value="change user"/>
+                  type="submit" name="cancel" id="button_cancel" value="${msg("changeUser")}"/>
         </span>
     </form>
 </div>

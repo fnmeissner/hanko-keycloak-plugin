@@ -10,11 +10,11 @@
         </#if>
     <#elseif section = "header">
         <#if loginMethod = "PASSWORD">
-            Sign in with Password
+            ${msg("signInPassword")}
         <#elseif loginMethod = "UAF">
-            Sign in with HANKO Authenticator
+            ${msg("signInAuthenticator")}
         <#elseif loginMethod = "WEBAUTHN">
-            Sign in with WebAuthn
+            ${msg("signInWebAuthn")}
         </#if>
     <#elseif section = "form">
 
@@ -37,8 +37,7 @@
             </form>
             <#include "hanko-multi-login-links.ftl">
         <#elseif loginMethod = "UAF">
-            <p>Please confirm your authentication with the HANKO Authenticator you registered with your account. We have
-                sent a notification to your device.</p>
+            <p>${msg("signInDescriptionAuthenticator")}</p>
 
             <img src="${url.resourcesPath}/img/login-hanko.png" width="120" style="display: block; margin: 50px auto">
 
@@ -73,7 +72,7 @@
                 window.onload = awaitLoginComplete;
             </script>
         <#elseif loginMethod = "WEBAUTHN">
-            <p>Please confirm your authentication with WebAuthn.</p>
+            <p>${msg("signInDescriptionWebAuthn")}</p>
 
             <div class="flexrow">
                 <div class="imgwrapper">
